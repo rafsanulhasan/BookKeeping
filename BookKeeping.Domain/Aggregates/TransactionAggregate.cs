@@ -1,15 +1,17 @@
-﻿using BookKeeping.Data.Abstractions;
+﻿using AutoMapper;
+
+using BookKeeping.Data;
+using BookKeeping.Data.Abstractions;
 using BookKeeping.Data.Entities;
 using BookKeeping.Domain.Abstractions;
 using BookKeeping.Domain.Entities;
 
+using Microsoft.EntityFrameworkCore;
+
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using AutoMapper;
 using System.Linq;
-using BookKeeping.Data;
+using System.Threading.Tasks;
 
 namespace BookKeeping.Domain.Aggregates
 {

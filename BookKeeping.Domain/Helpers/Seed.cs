@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 
 using static BookKeeping.Domain.Entities.TransactionFlowConstants;
+using static BookKeeping.Domain.Entities.TransactionTypeConstants;
 
 namespace BookKeeping.Domain.Helpers
 {
@@ -39,15 +40,15 @@ namespace BookKeeping.Domain.Helpers
 				return;
 			_transactionTypeRepository.Create(new()
 			{
-				Type = "Type 1"
+				Type = Type1
 			});
 			_transactionTypeRepository.Create(new()
 			{
-				Type = "Type 2"
+				Type = Type2
 			});
 			_transactionTypeRepository.Create(new()
 			{
-				Type = "Type 3"
+				Type = Type3
 			});
 			_transactionTypeRepository.SaveChangesAsync().Wait();
 		}
