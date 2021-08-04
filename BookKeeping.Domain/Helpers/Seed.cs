@@ -22,7 +22,7 @@ namespace BookKeeping.Domain.Helpers
 
 		private void CreateTransactionFlows()
 		{
-			if (_transactionFlowRepository.Read().ToList().Any())
+			if (_transactionFlowRepository.Read().Any())
 				return;
 			_transactionFlowRepository.Create(new()
 			{
@@ -36,7 +36,7 @@ namespace BookKeeping.Domain.Helpers
 		}
 		private void CreateTransactionTypes()
 		{
-			if (_transactionTypeRepository.Read().ToList().Any())
+			if (_transactionTypeRepository.Read().Any())
 				return;
 			_transactionTypeRepository.Create(new()
 			{
@@ -382,7 +382,7 @@ namespace BookKeeping.Domain.Helpers
 
 		private void CreateTransactions()
 		{
-			if (_transactionRepository.Read().ToList().Any())
+			if (_transactionRepository.Read().Any())
 				return;
 
 			CreateTransactionsFor2020();
