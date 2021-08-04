@@ -19,6 +19,7 @@ namespace BookKeeping.Domain.Aggregates
 		: IAggregate<Transaction>, ITransactionAggregate
 	{
 		private bool _disposedValue;
+		private object i;
 		private readonly IRepository<TransactionEntity, int> _transactionRepository;
 		private readonly BookKeepingDbContext _dbContext;
 		private readonly IMapper _mapper;
@@ -151,6 +152,41 @@ namespace BookKeeping.Domain.Aggregates
 					ResultAmounts[m] = 0 - expense2;
 				}
 			}
+
+			IncomeAmounts = IncomeAmounts
+							.OrderBy(i => i.Key)
+							.ToDictionary(
+								keySelector: i => i.Key,
+								elementSelector: i => i.Value
+							);
+
+			ExpenseAmounts = ExpenseAmounts
+							.OrderBy(e => e.Key)
+							.ToDictionary(
+								keySelector: e => e.Key,
+								elementSelector: e => e.Value
+							);
+
+			CumuliativeIncomeAmounts = CumuliativeIncomeAmounts
+									.OrderBy(ci => ci.Key)
+									.ToDictionary(
+										keySelector: ci => ci.Key,
+										elementSelector: ci => ci.Value
+									);
+
+			CumuliativeExpenseAmounts = CumuliativeExpenseAmounts
+									.OrderBy(ce => ce.Key)
+									.ToDictionary(
+										keySelector: ce => ce.Key,
+										elementSelector: ce => ce.Value
+									);
+
+			ResultAmounts = ResultAmounts
+							.OrderBy(r => r.Key)
+							.ToDictionary(
+								keySelector: r => r.Key,
+								elementSelector: r => r.Value
+							);
 		}
 
 		public async Task<ICollection<int>> GetYearsAsync()
