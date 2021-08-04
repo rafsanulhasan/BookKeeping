@@ -54,6 +54,8 @@ namespace BookKeeping.Data.Helpers
 				);
 			});
 
+			services.AddMemoryCache();
+
 			return services;
 		}
 	}

@@ -1,6 +1,7 @@
 ﻿using BookKeeping.Data.Entities;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -13,6 +14,7 @@ namespace BookKeeping.Data
 	{
 		private readonly IHostEnvironment _hostEnvironment;
 		private readonly ILoggerFactory _loggerFactory;
+		private readonly IMemoryCache _cache;
 
 		public DbSet<TransactionEntity> Transactions { get; set; }
 		public DbSet<TransactionFlowEntity> TransactionFlow { get; set; }
@@ -23,12 +25,14 @@ namespace BookKeeping.Data
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 			DbContextOptions<BookKeepingDbContext> options,
 			IHostEnvironment hostEnvironment,
-			ILoggerFactory loggerFactory
+			ILoggerFactory loggerFactory,
+			IMemoryCache cache
 		)
 			: base(options)
 		{
 			_hostEnvironment = hostEnvironment;
 			_loggerFactory = loggerFactory;
+			_cache = cache;
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -43,6 +47,8 @@ namespace BookKeeping.Data
 				);
 			}
 			_ = optionsBuilder.UseLoggerFactory(_loggerFactory);
+			_ = optionsBuilder.EnableServiceProviderCaching();
+			_ = optionsBuilder.UseMemoryCache(_cache);
 			base.OnConfiguring(optionsBuilder);
 		}
 
