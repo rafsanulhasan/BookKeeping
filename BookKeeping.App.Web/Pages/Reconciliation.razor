@@ -47,10 +47,10 @@ else
 				<tr>
 					<th style="padding:5px"></th>
 					<th style="padding:5px"></th>
-					@for (var i = 1; i <= 12; i++)
+					@for (var m = 1; m <= 12; m++)
 					{
 						<th style="padding:5px; text-align:center">
-							@DateTime.Parse($"{i}/1/{_selectedYear}").ToString("MMM")
+							@DateTime.Parse($"{m}/1/{_selectedYear}").ToString("MMM")
 						</th>
 					}
 				</tr>
