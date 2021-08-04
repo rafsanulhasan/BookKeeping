@@ -35,31 +35,41 @@ namespace BookKeeping.Data
 		{
 			if (_hostEnvironment.IsDevelopment())
 			{
-				optionsBuilder.EnableDetailedErrors();
-				optionsBuilder.EnableSensitiveDataLogging();
-				optionsBuilder.LogTo(
+				_ = optionsBuilder.EnableDetailedErrors();
+				_ = optionsBuilder.EnableSensitiveDataLogging();
+				_ = optionsBuilder.LogTo(
 					Console.WriteLine,
-					 LogLevel.Information
+					LogLevel.Information
 				);
 			}
-			optionsBuilder.UseLoggerFactory(_loggerFactory);
+			_ = optionsBuilder.UseLoggerFactory(_loggerFactory);
 			base.OnConfiguring(optionsBuilder);
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder
-				.Entity<TransactionEntity>()
+			var entityBuilder = modelBuilder.Entity<TransactionEntity>();
+
+			_ = entityBuilder.ToTable("Transactions");
+			_ = entityBuilder
 				.HasOne(t => t.TransactionFlow)
 				.WithMany(f => f.Transactions)
 				.HasForeignKey(t => t.TransactionFlowId)
 				.HasPrincipalKey(f => f.Id);
-			modelBuilder
-				.Entity<TransactionEntity>()
+			_ = entityBuilder
 				.HasOne(t => t.TransactionType)
 				.WithMany(tt => tt.Transactions)
 				.HasForeignKey(t => t.TransactionTypeId)
 				.HasPrincipalKey(tt => tt.Id);
+
+			_ = modelBuilder
+				.Entity<TransactionFlowEntity>()
+				.ToTable("TransactionFlows");
+
+			_ = modelBuilder
+				.Entity<TransactionTypeEntity>()
+				.ToTable("TransactionTypes");
+
 			base.OnModelCreating(modelBuilder);
 		}
 	}

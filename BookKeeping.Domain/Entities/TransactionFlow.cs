@@ -12,6 +12,7 @@ namespace BookKeeping.Domain.Entities
 		{
 			[Description(TransactionFlowConstants.Income)]
 			Income = 1,
+
 			[Description(TransactionFlowConstants.Expense)]
 			Expense = 2
 		}

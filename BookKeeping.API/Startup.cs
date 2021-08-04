@@ -102,14 +102,12 @@ namespace BookKeeping.API
 				seed.SeedData();
 			}
 
-			app.UseSwagger(c =>
-			{
-				c.SerializeAsV2 = false;
-			});
+			app.UseSwagger(c => c.SerializeAsV2 = false);
+
 			app.UseSwaggerUI(c =>
 			{
 				c.SwaggerEndpoint(
-					$"/swagger/v1.0.0.0/swagger.json",
+					$"/swagger/{ApiVersion}/swagger.json",
 					$"{ApiName!} {ApiVersion!}"
 				);
 				//c.RoutePrefix = string.Empty;

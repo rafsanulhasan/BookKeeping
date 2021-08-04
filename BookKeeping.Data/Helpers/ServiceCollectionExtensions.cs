@@ -1,9 +1,10 @@
 ﻿
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using BookKeeping.Data.Abstractions;
 using BookKeeping.Data.Entities;
 using BookKeeping.Data.Repositories;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BookKeeping.Data.Helpers
 {

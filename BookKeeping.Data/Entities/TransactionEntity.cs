@@ -6,7 +6,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookKeeping.Data.Entities
 {
-	[Table("Transactions")]
 	public record TransactionEntity
 		: DataEntityBase<int>
 	{

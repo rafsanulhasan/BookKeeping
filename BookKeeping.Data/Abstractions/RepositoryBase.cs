@@ -38,6 +38,7 @@ namespace BookKeeping.Data.Abstractions
 			 ? throw new InvalidOperationException($"Entity can't be updated. no data found with the correspinding id")
 			 : Set.Update(entity);
 		}
+
 		private async Task<EntityEntry<TEntity>> DeleteAsyncTask(
 		    TKey id
 		)
@@ -51,6 +52,7 @@ namespace BookKeeping.Data.Abstractions
 			 ? throw new InvalidOperationException($"Entity can't be updated. no data found with the correspinding id")
 			 : Set.Remove(existingEntity);
 		}
+
 		private async Task<EntityEntry<TEntity>> DeleteAsyncTask(
 		    TEntity entity
 		)

@@ -17,20 +17,21 @@ namespace BookKeeping.API
 		/// </summary>
 		public DomainEntityToDtoMappingProfile()
 		{
-			CreateMap<TransactionAggregate, IncomeExpenseDto>().ConvertUsing(
-				(aggregate, dto) =>
-				{
-					dto = new IncomeExpenseDto
+			CreateMap<TransactionAggregate, IncomeExpenseDto>()
+				.ConvertUsing(
+					(aggregate, dto) =>
 					{
-						Incomes = aggregate.IncomeAmounts,
-						CumuliativeIncomes = aggregate.CumuliativeIncomeAmounts,
-						Expenses = aggregate.ExpenseAmounts,
-						CumuliativeExpenses = aggregate.CumuliativeExpenseAmounts,
-						Result = aggregate.ResultAmounts
-					};
-					return dto;
-				}
-			);
+						dto = new IncomeExpenseDto
+						{
+							Incomes = aggregate.IncomeAmounts,
+							CumuliativeIncomes = aggregate.CumuliativeIncomeAmounts,
+							Expenses = aggregate.ExpenseAmounts,
+							CumuliativeExpenses = aggregate.CumuliativeExpenseAmounts,
+							Result = aggregate.ResultAmounts
+						};
+						return dto;
+					}
+				);
 		}
 	}
 }
