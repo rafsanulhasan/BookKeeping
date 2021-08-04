@@ -46,7 +46,7 @@ namespace BookKeeping.API.Controllers
 		[HttpGet("{year:int}")]
 		public async Task<IncomeExpenseDto> Get(int year)
 		{
-			await _aggregate.GetTransactions(year);
+			await _aggregate.GetTransactionsAsync(year);
 			var dto = _mapper.Map<IncomeExpenseDto>(_aggregate);
 			return dto;
 		}
@@ -55,7 +55,7 @@ namespace BookKeeping.API.Controllers
 		[HttpGet]
 		public Task<ICollection<int>> GetYears()
 		{
-			return _aggregate.GetYears();
+			return _aggregate.GetYearsAsync();
 		}
 	}
 }

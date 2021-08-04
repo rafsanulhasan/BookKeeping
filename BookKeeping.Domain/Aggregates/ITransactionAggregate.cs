@@ -15,7 +15,7 @@ namespace BookKeeping.Domain.Aggregates
 		IDictionary<int, double> CumulativeIncomeAmounts { get; }
 		IDictionary<int, double> CumulativeExpenseAmounts { get; }
 		IDictionary<int, double> ResultAmounts { get; }
-		Task GetTransactions(int year);
-		Task<ICollection<int>> GetYears();
+		Task GetTransactionsAsync(int year);
+		Task<ICollection<int>> GetYearsAsync();
 	}
 }

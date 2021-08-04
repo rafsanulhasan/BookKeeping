@@ -49,7 +49,7 @@ namespace BookKeeping.Domain.Aggregates
 			ResultAmounts = new Dictionary<int, double>();
 		}
 
-		public async Task GetTransactions(int year)
+		public async Task GetTransactionsAsync(int year)
 		{
 			var transactions = await _transactionRepository
 								.Read(t => t.TransactionDate.Year.Equals(year))
@@ -151,7 +151,7 @@ namespace BookKeeping.Domain.Aggregates
 			}
 		}
 
-		public async Task<ICollection<int>> GetYears()
+		public async Task<ICollection<int>> GetYearsAsync()
 		{
 			var dates = await _transactionRepository
 						.Read()

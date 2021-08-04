@@ -17,7 +17,6 @@ namespace BookKeeping.Domain.Helpers
 		private readonly IRepository<TransactionEntity, int> _transactionRepository;
 		private readonly IRepository<TransactionTypeEntity, int> _transactionTypeRepository;
 		private readonly IRepository<TransactionFlowEntity, int> _transactionFlowRepository;
-		private readonly BookKeepingDbContext _dbContext;
 		private readonly DatabaseFacade _dbFacade;
 
 		private void CreateTransactionFlows()
@@ -401,7 +400,6 @@ namespace BookKeeping.Domain.Helpers
 			_transactionRepository = transactionRepository;
 			_transactionTypeRepository = transactionTypeRepository;
 			_transactionFlowRepository = transactionFlowRepository;
-			_dbContext = dbContext;
 			_dbFacade = dbContext.Database;
 		}
 
