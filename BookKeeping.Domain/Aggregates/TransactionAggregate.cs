@@ -25,9 +25,9 @@ namespace BookKeeping.Domain.Aggregates
 		public ICollection<Transaction> Expenses { get; set; }
 
 		public IDictionary<int, double> IncomeAmounts { get; private set; }
-		public IDictionary<int, double> CumulativeIncomeAmounts { get; private set; }
+		public IDictionary<int, double> CumuliativeIncomeAmounts { get; private set; }
 		public IDictionary<int, double> ExpenseAmounts { get; private set; }
-		public IDictionary<int, double> CumulativeExpenseAmounts { get; private set; }
+		public IDictionary<int, double> CumuliativeExpenseAmounts { get; private set; }
 		public IDictionary<int, double> ResultAmounts { get; private set; }
 
 		public TransactionAggregate(
@@ -44,8 +44,8 @@ namespace BookKeeping.Domain.Aggregates
 			IncomeAmounts = new Dictionary<int, double>();
 			ExpenseAmounts = new Dictionary<int, double>();
 			IncomeAmounts = new Dictionary<int, double>();
-			CumulativeIncomeAmounts = new Dictionary<int, double>();
-			CumulativeExpenseAmounts = new Dictionary<int, double>();
+			CumuliativeIncomeAmounts = new Dictionary<int, double>();
+			CumuliativeExpenseAmounts = new Dictionary<int, double>();
 			ResultAmounts = new Dictionary<int, double>();
 		}
 
@@ -117,35 +117,35 @@ namespace BookKeeping.Domain.Aggregates
 				 && ExpenseAmounts.TryGetValue(m, out var expense)
 				)
 				{
-					CumulativeIncomeAmounts.Add(
+					CumuliativeIncomeAmounts.Add(
 						m,
 						m == 1
 						 ? income
-						 : income + (CumulativeIncomeAmounts.ContainsKey(m - 1) ? CumulativeIncomeAmounts[m - 1] : 0)
+						 : income + (CumuliativeIncomeAmounts.ContainsKey(m - 1) ? CumuliativeIncomeAmounts[m - 1] : 0)
 					);
-					CumulativeExpenseAmounts.Add(
+					CumuliativeExpenseAmounts.Add(
 						m,
 						m == 1
 						 ? expense
-						 : expense + (CumulativeExpenseAmounts.ContainsKey(m - 1) ? CumulativeExpenseAmounts[m - 1] : 0)
+						 : expense + (CumuliativeExpenseAmounts.ContainsKey(m - 1) ? CumuliativeExpenseAmounts[m - 1] : 0)
 					);
 					ResultAmounts[m] = income - expense;
 				}
 				else if (IncomeAmounts.TryGetValue(m, out var income2))
 				{
-					CumulativeIncomeAmounts[m] = m == 1
+					CumuliativeIncomeAmounts[m] = m == 1
 							 ? income2
-							 : income2 + CumulativeIncomeAmounts[m - 1];
+							 : income2 + CumuliativeIncomeAmounts[m - 1];
 					ResultAmounts[m] = income2;
 				}
 				else if (ExpenseAmounts.TryGetValue(m, out var expense2))
 				{
-					CumulativeIncomeAmounts[m] = m == 1
+					CumuliativeIncomeAmounts[m] = m == 1
 							 ? 0
-							 : (CumulativeIncomeAmounts.ContainsKey(m - 1) ? CumulativeIncomeAmounts[m - 1] : 0);
-					CumulativeExpenseAmounts[m] = m == 1
+							 : (CumuliativeIncomeAmounts.ContainsKey(m - 1) ? CumuliativeIncomeAmounts[m - 1] : 0);
+					CumuliativeExpenseAmounts[m] = m == 1
 							 ? expense2
-							 : expense2 + (CumulativeExpenseAmounts.ContainsKey(m - 1) ? CumulativeExpenseAmounts[m - 1] : 0);
+							 : expense2 + (CumuliativeExpenseAmounts.ContainsKey(m - 1) ? CumuliativeExpenseAmounts[m - 1] : 0);
 					ResultAmounts[m] = 0 - expense2;
 				}
 			}
@@ -168,8 +168,8 @@ namespace BookKeeping.Domain.Aggregates
 		{
 			IncomeAmounts.Clear();
 			ExpenseAmounts.Clear();
-			CumulativeIncomeAmounts.Clear();
-			CumulativeExpenseAmounts.Clear();
+			CumuliativeIncomeAmounts.Clear();
+			CumuliativeExpenseAmounts.Clear();
 			ResultAmounts.Clear();
 		}
 

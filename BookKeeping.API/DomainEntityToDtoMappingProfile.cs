@@ -23,9 +23,9 @@ namespace BookKeeping.API
 					dto = new IncomeExpenseDto
 					{
 						Incomes = aggregate.IncomeAmounts,
-						CumuliativeIncomes = aggregate.CumulativeIncomeAmounts,
+						CumuliativeIncomes = aggregate.CumuliativeIncomeAmounts,
 						Expenses = aggregate.ExpenseAmounts,
-						CumuliativeExpenses = aggregate.CumulativeExpenseAmounts,
+						CumuliativeExpenses = aggregate.CumuliativeExpenseAmounts,
 						Result = aggregate.ResultAmounts
 					};
 					return dto;
