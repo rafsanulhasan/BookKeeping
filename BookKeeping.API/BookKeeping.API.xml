@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BookKeeping.API</name>
+    </assembly>
+    <members>
+        <member name="T:BookKeeping.API.Controllers.TransactionsController">
+            <summary>
+            Works with Transactionsa
+            </summary>
+        </member>
+        <member name="M:BookKeeping.API.Controllers.TransactionsController.#ctor(BookKeeping.Domain.Aggregates.ITransactionAggregate,AutoMapper.IMapper)">
+            <summary>
+            Instantiates the Api Contoller
+            </summary>
+            <param name="aggregate"></param>
+            <param name="mapper"></param>
+        </member>
+        <member name="M:BookKeeping.API.Controllers.TransactionsController.Get(System.Int32)">
+            <summary>
+            Get all transactions specified by year
+            </summary>
+            <param name="year">The year to get transactions on</param>
+            <returns>
+            <seealso cref="T:BookKeeping.API.DTOs.IncomeExpenseDto">IncomeExpenseDto</seealso>
+            </returns>
+        </member>
+        <member name="T:BookKeeping.API.DomainEntityToDtoMappingProfile">
+            <summary>
+            Maps Domain Entities to Data Transfer Objects
+            </summary>
+        </member>
+        <member name="M:BookKeeping.API.DomainEntityToDtoMappingProfile.#ctor">
+            <summary>
+            Instantiates the mapping profile
+            </summary>
+        </member>
+    </members>
+</doc>

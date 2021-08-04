@@ -1,0 +1,36 @@
+﻿
+using AutoMapper;
+
+using BookKeeping.API.DTOs;
+using BookKeeping.Domain.Aggregates;
+
+namespace BookKeeping.API
+{
+	/// <summary>
+	/// Maps Domain Entities to Data Transfer Objects
+	/// </summary>
+	public class DomainEntityToDtoMappingProfile
+		: Profile
+	{
+		/// <summary>
+		/// Instantiates the mapping profile
+		/// </summary>
+		public DomainEntityToDtoMappingProfile()
+		{
+			CreateMap<TransactionAggregate, IncomeExpenseDto>().ConvertUsing(
+				(aggregate, dto) =>
+				{
+					dto = new IncomeExpenseDto
+					{
+						Incomes = aggregate.IncomeAmounts,
+						CumuliativeIncomes = aggregate.CumulativeIncomeAmounts,
+						Expenses = aggregate.ExpenseAmounts,
+						CumuliativeExpenses = aggregate.CumulativeExpenseAmounts,
+						Result = aggregate.ResultAmounts
+					};
+					return dto;
+				}
+			);
+		}
+	}
+}
