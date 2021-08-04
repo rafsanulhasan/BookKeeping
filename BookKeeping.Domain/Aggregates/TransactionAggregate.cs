@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using System.Linq;
 using BookKeeping.Data;
-using System.Diagnostics.CodeAnalysis;
 
 namespace BookKeeping.Domain.Aggregates
 {
@@ -19,8 +18,6 @@ namespace BookKeeping.Domain.Aggregates
 	{
 		private bool _disposedValue;
 		private readonly IRepository<TransactionEntity, int> _transactionRepository;
-		private readonly IRepository<TransactionFlowEntity, int> _transactionFlowRepository;
-		private readonly IRepository<TransactionTypeEntity, int> _transactionTypeRepository;
 		private readonly BookKeepingDbContext _dbContext;
 		private readonly IMapper _mapper;
 
@@ -35,15 +32,11 @@ namespace BookKeeping.Domain.Aggregates
 
 		public TransactionAggregate(
 			IRepository<TransactionEntity, int> transactionRepository,
-			IRepository<TransactionFlowEntity, int> transactionFlowRepository,
-			IRepository<TransactionTypeEntity, int> transactionTypeRepository,
 			BookKeepingDbContext dbContext,
 			IMapper mapper
 		)
 		{
 			_transactionRepository = transactionRepository;
-			_transactionFlowRepository = transactionFlowRepository;
-			_transactionTypeRepository = transactionTypeRepository;
 			_dbContext = dbContext;
 			_mapper = mapper;
 			Incomes = new List<Transaction>();
@@ -76,8 +69,22 @@ namespace BookKeeping.Domain.Aggregates
 										TransactionTypeId = t.TransactionTypeId
 									}
 								)
-								//.Include(t => t.TransactionFlow)
-								//.Include(t => t.TransactionType)
+								.Join(
+									_dbContext.TransactionType,
+									t => t.TransactionTypeId,
+									tt => tt.Id,
+									(t, tt) => new TransactionEntity
+									{
+										Id = t.Id,
+										Amount = t.Amount,
+										Currency = t.Currency,
+										TransactionDate = t.TransactionDate,
+										TransactionFlow = t.TransactionFlow,
+										TransactionFlowId = t.TransactionFlowId,
+										TransactionType = tt,
+										TransactionTypeId = tt.Id
+									}
+								)
 								.ToListAsync();
 
 			foreach (var t in transactions)
@@ -147,9 +154,9 @@ namespace BookKeeping.Domain.Aggregates
 		public async Task<ICollection<int>> GetYears()
 		{
 			var dates = await _transactionRepository
-				.Read()
-				.Select(t => t.TransactionDate)
-				.ToListAsync();
+						.Read()
+						.Select(t => t.TransactionDate)
+						.ToListAsync();
 			return dates
 				.Select(d => d.Year)
 				.Distinct()
