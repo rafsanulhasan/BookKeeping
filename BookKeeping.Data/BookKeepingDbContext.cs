@@ -43,7 +43,7 @@ namespace BookKeeping.Data
 				_ = optionsBuilder.EnableSensitiveDataLogging();
 				_ = optionsBuilder.LogTo(
 					Console.WriteLine,
-					LogLevel.Information
+					LogLevel.Debug
 				);
 			}
 			_ = optionsBuilder.UseLoggerFactory(_loggerFactory);
