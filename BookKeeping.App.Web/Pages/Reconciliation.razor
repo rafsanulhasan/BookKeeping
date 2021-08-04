@@ -1,6 +1,4 @@
 ﻿@page "/reconciliation"
-@using BookKeeping.API.DTOs
-@inject HttpClient Http
 
 <h1>Weather forecast</h1>
 
@@ -100,34 +98,5 @@ else
 				</tr>
 			</tbody>
 		</table>
-	}
-}
-
-@code {
-	private int _selectedYear;
-	private ICollection<int> _years;
-	private IncomeExpenseDto _dto;
-	private bool _invalidSelection;
-	private bool _isLoading;
-
-	private async void OnChange(ChangeEventArgs args)
-	{
-		if (_selectedYear > 0)
-		{
-			_isLoading = true;
-			_invalidSelection = false;
-			_dto = await Http.GetFromJsonAsync<IncomeExpenseDto>($"/api/Transactions/{args.Value}");
-			StateHasChanged();
-		}
-		else
-		{
-			_isLoading = false;
-			_invalidSelection = true;
-		}
-	}
-
-	protected override async Task OnInitializedAsync()
-	{
-		_years = await Http.GetFromJsonAsync<int[]>("/api/Transactions/years");
 	}
 }
