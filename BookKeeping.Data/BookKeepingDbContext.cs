@@ -48,7 +48,6 @@ namespace BookKeeping.Data
 #else
 					LogLevel.Information
 #endif
-
 				);
 			}
 			_ = optionsBuilder.UseLoggerFactory(_loggerFactory);
