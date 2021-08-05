@@ -12,7 +12,7 @@ namespace BookKeeping.App.Web.Pages
 	public partial class Reconciliation
 		: ComponentBase
 	{
-		private readonly int _selectedYear;
+		private int _selectedYear;
 		private ICollection<int> _years;
 		private IncomeExpenseDto _dto;
 		private bool _invalidSelection;
@@ -20,6 +20,7 @@ namespace BookKeeping.App.Web.Pages
 
 		[Inject]
 		public HttpClient Http { get; set; }
+
 		private async void OnChange(ChangeEventArgs args)
 		{
 			if (_selectedYear > 0)

@@ -1,0 +1,41 @@
+{
+	"version": "1.0",
+	"defaultProvider": "cdnjs",
+	"libraries": [
+		{
+			"library": "bootstrap@4.3.1",
+			"provider": "jsdelivr",
+			"destination": "wwwroot/lib/bootstrap/",
+			"files": [
+				"dist/css/bootstrap.css",
+				"dist/css/bootstrap.min.css",
+				"dist/css/bootstrap.min.css.map",
+				"dist/js/bootstrap.bundle.js",
+				"dist/js/bootstrap.bundle.js.map",
+				"dist/js/bootstrap.bundle.min.js",
+				"dist/js/bootstrap.bundle.min.js.map",
+				"dist/js/bootstrap.js",
+				"dist/js/bootstrap.js.map",
+				"dist/js/bootstrap.min.js",
+				"dist/js/bootstrap.min.js.map"
+			]
+		},
+		{
+			"library": "open-iconic@1.1.1",
+			"destination": "wwwroot/lib/open-iconic",
+			"files": [
+				"font/css/open-iconic-bootstrap.css",
+				"font/css/open-iconic-bootstrap.min.css",
+				"font/css/open-iconic-foundation.css",
+				"font/css/open-iconic-foundation.min.css",
+				"font/css/open-iconic.css",
+				"font/css/open-iconic.min.css",
+				"font/fonts/open-iconic.eot",
+				"font/fonts/open-iconic.otf",
+				"font/fonts/open-iconic.svg",
+				"font/fonts/open-iconic.ttf",
+				"font/fonts/open-iconic.woff"
+			]
+		}
+	]
+}
