@@ -12,7 +12,7 @@ namespace BookKeeping.App.Web.Pages
 	public partial class Reconciliation
 		: ComponentBase
 	{
-		private int _selectedYear;
+		private readonly int _selectedYear;
 		private ICollection<int> _years;
 		private IncomeExpenseDto _dto;
 		private bool _invalidSelection;

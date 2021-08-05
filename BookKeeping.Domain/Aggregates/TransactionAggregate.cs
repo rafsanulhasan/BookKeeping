@@ -19,7 +19,6 @@ namespace BookKeeping.Domain.Aggregates
 		: IAggregate<Transaction>, ITransactionAggregate
 	{
 		private bool _disposedValue;
-		private object i;
 		private readonly IRepository<TransactionEntity, int> _transactionRepository;
 		private readonly BookKeepingDbContext _dbContext;
 		private readonly IMapper _mapper;
