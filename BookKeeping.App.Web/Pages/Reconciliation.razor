@@ -17,6 +17,7 @@ else
 			<option value="@y">@y</option>
 		}
 	</select>
+	<button @onclick="async () => await GetYears()">Refresh</button>
 	@if (_isLoading && _dto is null)
 	{
 		<div>Loading</div>
@@ -97,4 +98,9 @@ else
 			</tbody>
 		</table>
 	}
+}
+
+@if (!string.IsNullOrWhiteSpace(_error))
+{
+	<div>@_error</div>
 }

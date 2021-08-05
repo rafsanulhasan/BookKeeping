@@ -21,7 +21,7 @@ namespace BookKeeping.API
 				.ConvertUsing(
 					(aggregate, dto) =>
 					{
-						dto = new IncomeExpenseDto
+						dto = new IncomeExpenseDto()
 						{
 							Incomes = aggregate.IncomeAmounts,
 							CumuliativeIncomes = aggregate.CumuliativeIncomeAmounts,

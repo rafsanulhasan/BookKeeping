@@ -5,7 +5,9 @@ using BookKeeping.Domain.Aggregates;
 
 using Microsoft.AspNetCore.Mvc;
 
-using System.Collections.Generic;
+using Symbiosis.Json.Specs.Ion;
+
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BookKeeping.API.Controllers
@@ -15,8 +17,8 @@ namespace BookKeeping.API.Controllers
 	/// </summary>
 	[ApiController]
 	[Route("api/[controller]")]
-	[ApiVersion("1.0")]
-	public class TransactionsController 
+	//[ApiVersion("1.0")]
+	public class TransactionsController
 		: ControllerBase
 	{
 		private readonly ITransactionAggregate _aggregate;
@@ -44,18 +46,27 @@ namespace BookKeeping.API.Controllers
 		/// <seealso cref="IncomeExpenseDto">IncomeExpenseDto</seealso>
 		/// </returns>
 		[HttpGet("{year:int}")]
-		public async Task<IncomeExpenseDto> Get(int year)
+		[ResponseCache(Duration = 60)]
+		public async Task<ActionResult<ApiResource<IncomeExpenseDto>>> Get(int year)
 		{
 			await _aggregate.GetTransactionsAsync(year);
 			var dto = _mapper.Map<IncomeExpenseDto>(_aggregate);
-			return dto;
+			return Ok(new ApiResource<IncomeExpenseDto>
+			{
+				Value = dto
+			});
 		}
 
 		[Route("years")]
 		[HttpGet]
-		public Task<ICollection<int>> GetYears()
+		[ResponseCache(Duration = 60)]
+		public async Task<ActionResult<ApiResource<YearsList>>> GetYears()
+		//public async Task<ActionResult<YearsList>> GetYears()
 		{
-			return _aggregate.GetYearsAsync();
+			var years = await _aggregate.GetYearsAsync();
+			var yearList = new YearsList { Years = years.ToList() };
+			//return Ok(yearList);
+			return Ok(yearList);
 		}
 	}
 }

@@ -2,11 +2,15 @@
 using BookKeeping.Domain.Helpers;
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+
+using Newtonsoft.Json;
 
 using System;
 using System.IO;
@@ -47,10 +51,31 @@ namespace BookKeeping.API
 		public void ConfigureServices(IServiceCollection services)
 		{
 			_ = services.AddOptions();
-			_ = services.AddRazorPages();
+			//_ = services.AddRazorPages();
 			_ = services
-				.AddControllersWithViews()
-				.AddControllersAsServices();
+				.AddControllersWithViews(opt => opt.Filters.Add<EtagAttribute>(0))
+				.AddControllersAsServices()
+				.AddNewtonsoftJson(options =>
+				{
+					options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+					options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
+				})
+				//.AddIon<NewtonsoftJsonOutputFormatter>(o=>
+				//{
+				//	o.AddLinkRewritingFilter = false;
+				//	o.AddOutputFormatter = true;
+				//	o.RemoveJsonOutputformatter = false;
+				//})
+				;
+			//_ = services.AddApiVersioning(o =>
+			//{
+			//	o.ReportApiVersions = true;
+			//	o.DefaultApiVersion = new ApiVersion(
+			//		AssemblyVersion!.Major,
+			//		AssemblyVersion.Minor
+			//	);
+			//});
+			_ = services.AddResponseCaching();
 
 			var currentAssemblyName = CurrentAssemblyName!.Name!;
 
@@ -78,7 +103,7 @@ namespace BookKeeping.API
 				);
 			});
 
-			services = services.AddSeed();
+			_ = services = services.AddSeed();
 
 			_ = services.AddDomain(
 				Configuration,
@@ -98,6 +123,7 @@ namespace BookKeeping.API
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
+				app.UseWebAssemblyDebugging();
 				seed.Migrate();
 				seed.SeedData();
 			}
@@ -116,16 +142,17 @@ namespace BookKeeping.API
 			app.UseHttpsRedirection();
 			app.UseBlazorFrameworkFiles();
 			app.UseStaticFiles();
+			app.UseResponseCaching();
 
 			app.UseRouting();
 
 			app.UseAuthorization();
-
 			_ = app.UseEndpoints(endpoints =>
 			{
-				_ = endpoints.MapRazorPages();
+				//_ = endpoints.MapRazorPages();
 				_ = endpoints.MapControllers();
 				_ = endpoints.MapFallbackToFile("index.html");
+				//_ = endpoints.MapFallbackToPage("/_Host");
 			});
 		}
 	}
