@@ -58,42 +58,42 @@ else
 			<tbody>
 				<tr>
 					<td style="padding:5px"></td>
-					<td style="padding:5px">Incomes</td>
+					<th style="padding: 5px; text-align: right">Incomes</th>
 					@foreach (var d in _dto.Incomes)
 					{
-						<td style="padding:5px">@d.Value</td>
+						<td style="padding: 5px; text-align: center">@d.Value</td>
 					}
 				</tr>
 				<tr>
 					<td style="padding:5px"></td>
-					<td style="padding:5px">Cumuliative Incomes</td>
+					<th style="padding: 5px; text-align: right">Cumuliative Incomes</th>
 					@foreach (var d in _dto.CumuliativeIncomes)
 					{
-						<td style="padding:5px">@d.Value</td>
+						<td style="padding: 5px; text-align: center">@d.Value</td>
 					}
 				</tr>
 				<tr>
 					<td style="padding:5px"></td>
-					<td style="padding:5px">Expenses</td>
+					<th style="padding: 5px; text-align: right">Expenses</th>
 					@foreach (var d in _dto.Expenses)
 					{
-						<td style="padding:5px">@d.Value</td>
+						<td style="padding: 5px; text-align: center">@d.Value</td>
 					}
 				</tr>
 				<tr>
 					<td style="padding:5px"></td>
-					<td style="padding:5px">Cumuliative Expenses</td>
+					<th style="padding: 5px; text-align: right">Cumuliative Expenses</th>
 					@foreach (var d in _dto.CumuliativeExpenses)
 					{
-						<td style="padding:5px">@d.Value</td>
+						<td style="padding: 5px; text-align: center">@d.Value</td>
 					}
 				</tr>
 				<tr>
 					<td style="padding:5px"></td>
-					<td style="padding:5px">Result</td>
+					<th style="padding: 5px; text-align: right">Result</th>
 					@foreach (var d in _dto.Result)
 					{
-						<td style="padding:5px">@d.Value</td>
+						<td style="padding: 5px; text-align: center">@d.Value</td>
 					}
 				</tr>
 			</tbody>
