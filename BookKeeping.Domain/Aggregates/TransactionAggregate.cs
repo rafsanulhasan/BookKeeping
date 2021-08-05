@@ -226,6 +226,7 @@ namespace BookKeeping.Domain.Aggregates
 					// TODO: dispose managed state (managed objects)
 					ClearTransactions();
 					_transactionRepository.Dispose();
+					_dbContext.Dispose();
 				}
 
 				// TODO: free unmanaged resources (unmanaged objects) and override finalizer
