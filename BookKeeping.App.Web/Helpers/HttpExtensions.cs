@@ -5,16 +5,14 @@ using Newtonsoft.Json;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace BookKeeping.App.Web.Helpers
 {
 	public static class HttpExtensions
 	{
-		public static async Task<T> Get<T>(
+		public static async Task<T> GetAsync<T>(
 			this HttpClient client,
 			string uri,
 			Action<T> onSuccess,
@@ -22,7 +20,7 @@ namespace BookKeeping.App.Web.Helpers
 		)
 			where T : new()
 		{
-			var dto = default(T);
+			T? dto = new();
 			if (string.IsNullOrWhiteSpace(uri))
 				throw new ArgumentNullException(nameof(uri));
 			try
@@ -34,21 +32,32 @@ namespace BookKeeping.App.Web.Helpers
 				var response = await client.GetAsync($"{client.BaseAddress}{uri}");
 				if (response.StatusCode.Equals(StatusCodes.Status200OK))
 				{
-					if (response.Headers.ETag is EntityTagHeaderValue eTagHeaderValue)
+					if (response.Headers.ETag is not null)
 					{
-						HttpStates.ETags.Add(uri, eTagHeaderValue.Tag);
+						HttpStates.ETags.TryAdd(uri, response.Headers.ETag.Tag);
 					}
 					var json = await response.Content.ReadAsStringAsync();
+					onFailed(json);
 					dto = JsonConvert.DeserializeObject<T>(json);
 					if (dto is not null)
+					{
 						onSuccess(dto);
+						return dto;
+					}
 					else
-						onFailed("Null value returned");
+					{
+						onFailed("null returned");
+						throw new Exception();
+					}
 				}
 			}
 			catch (Exception ex)
 			{
 				onFailed(ex.Message);
+			}
+			if (dto is null)
+			{
+				onFailed("Null returned");
 			}
 			return dto!;
 		}

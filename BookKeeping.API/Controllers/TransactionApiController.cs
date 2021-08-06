@@ -5,8 +5,7 @@ using BookKeeping.Domain.Aggregates;
 
 using Microsoft.AspNetCore.Mvc;
 
-using Symbiosis.Json.Specs.Ion;
-
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -47,20 +46,27 @@ namespace BookKeeping.API.Controllers
 		/// </returns>
 		[HttpGet("{year:int}")]
 		[ResponseCache(Duration = 60)]
-		public async Task<ActionResult<ApiResource<IncomeExpenseDto>>> Get(int year)
+		public async Task<ActionResult<IncomeExpenseDto>> Get(int year)
 		{
-			await _aggregate.GetTransactionsAsync(year);
-			var dto = _mapper.Map<IncomeExpenseDto>(_aggregate);
-			return Ok(new ApiResource<IncomeExpenseDto>
+			try
 			{
-				Value = dto
-			});
+				await _aggregate.GetTransactionsAsync(year);
+				var dto = _mapper.Map<IncomeExpenseDto>(_aggregate);
+				return Ok(dto);
+			}
+			catch (Exception ex)
+			{
+				return Ok(new
+				{
+					error = ex.Message
+				});
+			}
 		}
 
 		[Route("years")]
 		[HttpGet]
 		[ResponseCache(Duration = 60)]
-		public async Task<ActionResult<ApiResource<YearsList>>> GetYears()
+		public async Task<ActionResult<YearsList>> GetYears()
 		//public async Task<ActionResult<YearsList>> GetYears()
 		{
 			var years = await _aggregate.GetYearsAsync();

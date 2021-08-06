@@ -3,18 +3,17 @@ using BookKeeping.API.DTOs;
 using BookKeeping.App.Web.Helpers;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
 
-using Symbiosis.Json.Specs.Ion;
-
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace BookKeeping.App.Web.Pages
@@ -24,10 +23,10 @@ namespace BookKeeping.App.Web.Pages
 	{
 		private string _error = string.Empty;
 		private int _selectedYear;
-		private ICollection<int> _years = new List<int>();
-		private IncomeExpenseDto _dto = new();
-		private bool _invalidSelection;
-		private bool _isLoading;
+		private ICollection<int>? _years = null;
+		private IncomeExpenseDto? _dto = null;
+		private bool _invalidSelection = true;
+		private bool _isLoading = true;
 
 		[Inject]
 		public HttpClient? Http { get; set; }
@@ -52,7 +51,7 @@ namespace BookKeeping.App.Web.Pages
 				{
 					if (response.Headers.ETag is not null)
 					{
-						HttpStates.ETags.Add(uri, response.Headers.ETag.Tag);
+						HttpStates.ETags.TryAdd(uri, response.Headers.ETag.Tag);
 					}
 					var resourceJson = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 					Logger.LogInformation(resourceJson);
@@ -69,19 +68,48 @@ namespace BookKeeping.App.Web.Pages
 
 		private async void OnChange(ChangeEventArgs args)
 		{
+			var val = args.Value;
+			Logger.LogInformation($"Selected {val}");
 			if (_selectedYear > 0)
 			{
-				_isLoading = true;
-				_invalidSelection = false;
-				var uri = $"/api/transactions/{args.Value}";
-				_dto = (await Http!.GetFromJsonAsync<IncomeExpenseDto>(uri))!;
+				var uri = $"api/transactions/{args.Value}";
+				try
+				{
+					_isLoading = true;
+					_invalidSelection = false;
+					var response = await Http!.GetAsync($"{Http.BaseAddress}{uri}");
+					response = response.EnsureSuccessStatusCode();
+					Logger.LogInformation(JsonConvert.SerializeObject(response));
+					if (response is not null)
+					{
+						_isLoading = false;
+						Logger.LogInformation("response succeeded");
+						Debug.WriteLine("rs");
+						var json = await response.Content.ReadAsStringAsync();
+						Logger.LogInformation(json);
+						var dto = JsonConvert.DeserializeObject<IncomeExpenseDto>(json);
+						if (dto is not null)
+						{
+							_isLoading = false;
+							_invalidSelection = false;
+							_dto = dto;
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					_isLoading = false;
+					_invalidSelection = false;
+					_error = ex.Message;
+				}
 			}
 			else
 			{
 				_isLoading = false;
 				_invalidSelection = true;
+				_error = "Please select valid option";
 			}
-				StateHasChanged();
+			StateHasChanged();
 		}
 
 		protected override async Task OnInitializedAsync()

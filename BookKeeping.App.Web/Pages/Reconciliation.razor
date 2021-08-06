@@ -18,12 +18,11 @@ else
 		}
 	</select>
 	<button @onclick="async () => await GetYears()">Refresh</button>
-	@if (_isLoading && _dto is null)
+	@if (!_invalidSelection && _isLoading && _dto is null)
 	{
 		<div>Loading</div>
 	}
-	else if (_selectedYear > 0
-	 && _dto is null
+	else if (_dto is null
 	 && !_invalidSelection
 	 && !_isLoading
 	)
@@ -34,7 +33,7 @@ else
 	{
 		<div class="danger">Please select a valid option</div>
 	}
-	else if (_dto is not null && !_invalidSelection)
+	else if (_dto is not null && !_invalidSelection && !_isLoading)
 	{
 		<table>
 			<thead>
