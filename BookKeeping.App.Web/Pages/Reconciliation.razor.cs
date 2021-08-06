@@ -77,22 +77,39 @@ namespace BookKeeping.App.Web.Pages
 				{
 					_isLoading = true;
 					_invalidSelection = false;
-					var response = await Http!.GetAsync($"{Http.BaseAddress}{uri}");
-					response = response.EnsureSuccessStatusCode();
+					if (HttpStates.ETags.TryGetValue(uri, out var eTag))
+					{
+						Http!.DefaultRequestHeaders.Add(CacheRequestHeadersConst.IfNoneMatch, eTag);
+					}
+					var response = await Http!.GetAsync($"{Http.BaseAddress}{uri}").ConfigureAwait(false);
+
 					Logger.LogInformation(JsonConvert.SerializeObject(response));
 					if (response is not null)
 					{
+						if (response.Headers.ETag is not null)
+						{
+							HttpStates.ETags.TryAdd(uri, response.Headers.ETag.Tag);
+						}
 						_isLoading = false;
 						Logger.LogInformation("response succeeded");
 						Debug.WriteLine("rs");
-						var json = await response.Content.ReadAsStringAsync();
+						var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 						Logger.LogInformation(json);
 						var dto = JsonConvert.DeserializeObject<IncomeExpenseDto>(json);
-						if (dto is not null)
+						if (dto is not null
+						 && !string.IsNullOrWhiteSpace(response.ReasonPhrase) 
+						 && response.ReasonPhrase.Equals("OK")
+						)
 						{
 							_isLoading = false;
 							_invalidSelection = false;
 							_dto = dto;
+						}
+						if (response.StatusCode.Equals(StatusCodes.Status304NotModified)
+						 || (!string.IsNullOrWhiteSpace(response.ReasonPhrase) && response.ReasonPhrase.Equals("Not Modified"))
+						)
+						{
+							_error = "Response got from cache";
 						}
 					}
 				}
