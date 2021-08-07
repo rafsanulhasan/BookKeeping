@@ -50,7 +50,7 @@ namespace BookKeeping.App.Web.Pages
 		[Inject]
 		public ILogger<Reconciliation>? Logger { get; set; }
 
-		private void IncomeExpenseStateChanged(object? sender, IncomeExpenseState e)
+		private void IncomeExpenseStateChanged(object? _, IncomeExpenseState e)
 		{
 			_isLoading = e.IsLoading;
 			_invalidSelection = _selectedYear <= 0;
