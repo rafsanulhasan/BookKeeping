@@ -119,7 +119,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters
 						 && (handler.Match(taggable) || !handler.NoneMatch(taggable))
 						)
 						{
-							//result.StatusCode = StatusCodes.Status304NotModified;
+							okResult.StatusCode = StatusCodes.Status304NotModified;
 							okResult.Value = null;
 							context.Result = okResult;
 						}
