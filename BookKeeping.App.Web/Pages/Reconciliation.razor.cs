@@ -1,6 +1,9 @@
 ﻿
 using BookKeeping.API.DTOs;
 using BookKeeping.App.Web.Store;
+using BookKeeping.App.Web.Store.EntityTag;
+using BookKeeping.App.Web.Store.IncomeExpense;
+using BookKeeping.App.Web.Store.Years;
 
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
@@ -35,6 +38,9 @@ namespace BookKeeping.App.Web.Pages
 
 		[Inject]
 		public IState<YearsState>? YearsState { get; set; }
+
+		[Inject]
+		public IState<EntityTagState>? EntityTagState { get; set; }
 
 		[Inject]
 		public IDispatcher? Dispatcher { get; set; }
@@ -95,8 +101,13 @@ namespace BookKeeping.App.Web.Pages
 			StateHasChanged();
 		}
 
-		private void GetYears() 
-			=> Dispatcher?.Dispatch(new FetchYearsAction());
+		private void GetYears()
+		{
+			if (EntityTagState!.Value.EntityTags.TryGetValue("api/transactions/years", out var eTag))
+				Dispatcher?.Dispatch(new FetchYearsAction(eTag));
+			else
+				Dispatcher?.Dispatch(new FetchYearsAction());
+		}
 
 		private void OnChange(ChangeEventArgs args)
 		{

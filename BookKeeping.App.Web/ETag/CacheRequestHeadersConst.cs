@@ -10,6 +10,12 @@ namespace Microsoft.AspNetCore.Mvc
 		IfNoneMatch,
 
 		[Description(HeaderNames.IfMatch)]
-		IfMatch
+		IfMatch,
+
+		[Description(HeaderNames.IfModifiedSince)]
+		IfModifiedSince,
+
+		[Description(HeaderNames.IfUnmodifiedSince)]
+		IfUnmodifiedSince
 	}
 }

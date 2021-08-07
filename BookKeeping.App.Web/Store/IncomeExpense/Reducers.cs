@@ -4,34 +4,10 @@ using System;
 
 using static BookKeeping.App.Web.Store.DisplayMessage;
 
-namespace BookKeeping.App.Web.Store
+namespace BookKeeping.App.Web.Store.IncomeExpense
 {
 	public static class Reducers
 	{
-		[ReducerMethod]
-		public static YearsState UpdateYearsState(
-			YearsState state,
-			YearsFetchedAction action
-		)
-			=> state with
-			{
-				Data = action.Years,
-				IsLoading = false,
-				IsLoaded = true,
-				EntityTag = action.EntityTag
-			};
-
-		[ReducerMethod]
-		public static YearsState FetchJsonYearsState(
-			YearsState state,
-			YearsFetchedInJsonAction action
-		)
-			=> state with
-			{
-				Message = new($"Fetched years with {action.Json}", MessageType.Information),
-				IsLoading = false,
-				IsLoaded = true
-			};
 
 		[ReducerMethod]
 		public static IncomeExpenseState UpdateIncomeExpenseStateReducer(
@@ -43,7 +19,6 @@ namespace BookKeeping.App.Web.Store
 				IsLoading = false,
 				IsLoaded = true,
 				IsFailed = false,
-				EntityTag = action.EntityTag,
 				FetchedAt = DateTime.UtcNow,
 				Data = action.State.Data,
 				Message = new DisplayMessage("Fetched data successfully", MessageType.Information)

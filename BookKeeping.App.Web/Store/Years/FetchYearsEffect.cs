@@ -1,5 +1,6 @@
 ﻿
 using BookKeeping.API.DTOs;
+using BookKeeping.App.Web.Store.EntityTag;
 
 using Fluxor;
 
@@ -10,21 +11,21 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace BookKeeping.App.Web.Store
+namespace BookKeeping.App.Web.Store.Years
 {
 	public class FetchYearsEffect
 		: Effect<FetchYearsAction>
 	{
 		private readonly HttpClient _http;
-		private readonly IState<YearsState> _state;
+		private readonly IState<EntityTagState> _entityTagState;
 
 		public FetchYearsEffect(
 			HttpClient http,
-			IState<YearsState> state
+			IState<EntityTagState> entityTagState
 		)
 		{
 			_http = http;
-			_state = state;
+			_entityTagState = entityTagState;
 		}
 
 		public override async Task HandleAsync(
@@ -32,28 +33,38 @@ namespace BookKeeping.App.Web.Store
 			IDispatcher dispatcher
 		)
 		{
-			if (!string.IsNullOrWhiteSpace(_state.Value.EntityTag))
+			if (!string.IsNullOrWhiteSpace(action.EntityTag))
 			{
 				_http.DefaultRequestHeaders.Add(
-					HeaderNames.IfNoneMatch,
-					_state.Value.EntityTag
+					HeaderNames.IfMatch,
+					action.EntityTag
 				);
 			}
 			var uri = "api/transactions/years";
 			var response = await _http!.GetAsync(
 				$"{_http.BaseAddress}{uri}"
-			).ConfigureAwait(true);
+			).ConfigureAwait(false);
 			var resourceJson = await response
 								.Content
 								.ReadAsStringAsync()
-								.ConfigureAwait(true);
-			dispatcher.Dispatch(new YearsFetchedInJsonAction(resourceJson));
+								.ConfigureAwait(false);
+			//dispatcher.Dispatch(new YearsFetchedInJsonAction(resourceJson));
 			var resource = JsonConvert.DeserializeObject<YearsList>(resourceJson);
 			if (resource is not null)
 			{
 				dispatcher.Dispatch(
-					new YearsFetchedAction(resource.Years, response.Headers.ETag?.Tag)
+					new YearsFetchedAction(resource.Years)
 				);
+
+				var tags = _entityTagState.Value.EntityTags;
+
+				if (!tags.ContainsKey(uri) && response.Headers.ETag is not null)
+				{
+					tags.Add(uri, response.Headers.ETag.Tag);
+					dispatcher.Dispatch(
+						new UpdateEntityTagAction(tags)
+					);
+				}
 			}
 		}
 	}

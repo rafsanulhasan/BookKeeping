@@ -45,7 +45,7 @@ namespace BookKeeping.API.Controllers
 		/// <seealso cref="IncomeExpenseDto">IncomeExpenseDto</seealso>
 		/// </returns>
 		[HttpGet("{year:int}")]
-		[ResponseCache(Duration = 60)]
+		//[ResponseCache(Duration = 60)]
 		public async Task<ActionResult<IncomeExpenseDto>> Get(int year)
 		{
 			try
@@ -65,7 +65,7 @@ namespace BookKeeping.API.Controllers
 
 		[Route("years")]
 		[HttpGet]
-		[ResponseCache(Duration = 60)]
+		//[ResponseCache(Duration = 60)]
 		public async Task<ActionResult<YearsList>> GetYears()
 		//public async Task<ActionResult<YearsList>> GetYears()
 		{

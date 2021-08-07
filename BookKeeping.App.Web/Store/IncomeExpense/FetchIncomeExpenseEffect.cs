@@ -1,4 +1,6 @@
 ﻿using BookKeeping.API.DTOs;
+using BookKeeping.App.Web.Store.EntityTag;
+using BookKeeping.App.Web.Store.Years;
 
 using Fluxor;
 
@@ -14,23 +16,27 @@ using System.Threading.Tasks;
 
 using static BookKeeping.App.Web.Store.DisplayMessage;
 
-namespace BookKeeping.App.Web.Store
+namespace BookKeeping.App.Web.Store.IncomeExpense
 {
 	public class FetchIncomeExpenseEffect
 		: Effect<YearSelectedAction>
 	{
 		private readonly HttpClient _http;
 		private readonly IState<IncomeExpenseState> _state;
+		private readonly IState<EntityTagState> _entityTagState;
 
 		private async Task<HttpResponseMessage?> FetchData(int year)
 		{
 			if (year == 0)
 				return null;
 
-			if (!string.IsNullOrWhiteSpace(_state.Value.EntityTag))
-				_http.DefaultRequestHeaders.Add(HeaderNames.IfNoneMatch, _state.Value.EntityTag);
-
 			var uri = $"api/transactions/{year}";
+
+			if (_entityTagState.Value.EntityTags.TryGetValue(uri, out var eTag)
+			 && !string.IsNullOrWhiteSpace(eTag)
+			)
+				_http.DefaultRequestHeaders.Add(HeaderNames.IfMatch, eTag);
+
 			return await _http!
 					.GetAsync($"{_http.BaseAddress}{uri}")
 					.ConfigureAwait(false);
@@ -42,7 +48,7 @@ namespace BookKeeping.App.Web.Store
 			HttpResponseMessage? response = null
 		)
 		{
-
+			var uri = $"api/transactions/{year}";
 			var state = _state.Value;
 			if (response is null)
 			{
@@ -72,7 +78,7 @@ namespace BookKeeping.App.Web.Store
 				);
 				return;
 			}
-			response = response.EnsureSuccessStatusCode();
+			//response = response.EnsureSuccessStatusCode();
 			var json = await response
 							.Content
 							.ReadAsStringAsync()
@@ -114,15 +120,28 @@ namespace BookKeeping.App.Web.Store
 					response.Headers.ETag?.Tag
 				)
 			);
+			var eTag = response.Headers.ETag?.Tag;
+			var entityTags = _entityTagState.Value.EntityTags;
+			if (!entityTags.TryGetValue(uri, out var entityTag))
+				entityTags.Add(uri, eTag);
+			else
+				entityTags[uri] = eTag;
+			dispatcher.Dispatch(
+					new UpdateEntityTagAction(
+						entityTags
+					)
+				);
 		}
 
 		public FetchIncomeExpenseEffect(
 			HttpClient http,
-			IState<IncomeExpenseState> state
+			IState<IncomeExpenseState> state,
+			IState<EntityTagState> entityTagSate
 		)
 		{
 			_http = http;
 			_state = state;
+			_entityTagState = entityTagSate;
 		}
 
 		public override async Task HandleAsync(
@@ -151,19 +170,16 @@ namespace BookKeeping.App.Web.Store
 						.ConfigureAwait(false);
 				return;
 			}
-			else
+
+			if (DateTime.Now - _state.Value.FetchedAt > _state.Value.CacheDuration)
 			{
-				if (DateTime.Now - _state.Value.FetchedAt > _state.Value.CacheDuration)
-				{
-					await FetchAndProcess(action.Year)
-						.ConfigureAwait(false);
-					return;
-				}
-				dispatcher.Dispatch(
-					new IncomeExpenseFetchedAction(_state.Value, action.Year, null)
-				);
+				await FetchAndProcess(action.Year)
+					.ConfigureAwait(false);
 				return;
 			}
+			dispatcher.Dispatch(
+				new IncomeExpenseFetchedAction(_state.Value, action.Year)
+			);
 		}
 	}
 }

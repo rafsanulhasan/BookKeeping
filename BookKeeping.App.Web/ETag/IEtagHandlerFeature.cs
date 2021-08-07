@@ -4,5 +4,7 @@
 	{
 		bool NoneMatch(ETaggable data);
 		bool Match(ETaggable data);
+		bool ModifiedSince(ETaggable data);
+		bool UnmodifiedSince(ETaggable data);
 	}
 }

@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 
 namespace BookKeeping.App.Web.Store
 {
@@ -19,8 +20,7 @@ namespace BookKeeping.App.Web.Store
 		DisplayMessage? Message,
 		TimeSpan? CacheDuration,
 		DateTime? FetchedAt,
-		T? Data,
-		string? EntityTag
+		T? Data
 	) 
 		: ApplicationStateBase(IsLoading, IsLoaded, IsFailed, Message)
 		where T: class, new();

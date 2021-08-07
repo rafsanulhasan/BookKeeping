@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 
 using System;
@@ -13,13 +14,17 @@ namespace Microsoft.AspNetCore.Mvc.Filters
 		private readonly HashAlgorithm _hashAlgorithm;
 		private readonly IHeaderDictionary _headers;
 
+		public ILogger<EtagHandlerFeature>? Logger { get; set; }
+
 		public EtagHandlerFeature(
 			HashAlgorithm hashAlgorithm,
-			IHeaderDictionary headers
+			IHeaderDictionary headers,
+			ILogger<EtagHandlerFeature> logger
 		)
 		{
 			_hashAlgorithm = hashAlgorithm;
 			_headers = headers;
+			Logger = logger;
 		}
 
 		private bool CheckRequestHeader(
@@ -27,15 +32,20 @@ namespace Microsoft.AspNetCore.Mvc.Filters
 			CacheRequestHeaders header
 		)
 		{
-			var headerName = header == CacheRequestHeaders.IfMatch 
-				          ? HeaderNames.IfMatch
-						: HeaderNames.IfNoneMatch;
+			var headerName = header switch
+			{
+				CacheRequestHeaders.IfMatch => HeaderNames.IfMatch,
+				CacheRequestHeaders.IfNoneMatch => HeaderNames.IfNoneMatch,
+				CacheRequestHeaders.IfModifiedSince => HeaderNames.IfModifiedSince,
+				CacheRequestHeaders.IfUnmodifiedSince => HeaderNames.IfUnmodifiedSince,
+				_ => string.Empty,
+			};
 
 			var headerHasValue = _headers.TryGetValue(
 				headerName, 
-				out var eTag
+				out var headerEntityTag
 			);
-			eTag = $"\"{eTag}\"";
+			headerEntityTag = $"\"{headerEntityTag}\"";
 
 			var entityTag = data.GetEtag(_hashAlgorithm);
 			entityTag = $"\"{entityTag}\"";
@@ -46,12 +56,28 @@ namespace Microsoft.AspNetCore.Mvc.Filters
 					if (!headerHasValue)
 						return false;
 
-					return entityTag.Equals(eTag);
-				default:
+					return !entityTag.Equals(headerEntityTag);
+
+				case CacheRequestHeaders.IfNoneMatch:
 					if (!headerHasValue)
 						return true;
 
-					return !entityTag.Equals(eTag);
+					return entityTag.Equals(headerEntityTag);
+
+				case CacheRequestHeaders.IfModifiedSince:
+					if (!headerHasValue)
+						return true;
+
+					return entityTag.Equals(headerEntityTag);
+
+				case CacheRequestHeaders.IfUnmodifiedSince:
+					if (!headerHasValue)
+						return false;
+
+					return !entityTag.Equals(headerEntityTag);
+
+				default:
+					return false;
 			}
 		}
 
@@ -60,6 +86,12 @@ namespace Microsoft.AspNetCore.Mvc.Filters
 
 		public bool NoneMatch(ETaggable data)
 			=> CheckRequestHeader(data, CacheRequestHeaders.IfNoneMatch);
+
+		public bool ModifiedSince(ETaggable data)
+			=> CheckRequestHeader(data, CacheRequestHeaders.IfModifiedSince);
+
+		public bool UnmodifiedSince(ETaggable data)
+			=> CheckRequestHeader(data, CacheRequestHeaders.IfUnmodifiedSince);
 
 		#region IDisposable Support
 		private bool _disposedValue = false; // To detect redundant calls

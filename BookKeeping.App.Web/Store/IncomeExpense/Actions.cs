@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace BookKeeping.App.Web.Store
+namespace BookKeeping.App.Web.Store.IncomeExpense
 {
-	public record FetchYearsAction();
-	public record YearsFetchingAction();
-	public record YearsFetchedInJsonAction(string Json);
-	public record YearsFetchedAction(List<int> Years, string? EntityTag);
-	public record YearsFetchingErrorAction(DisplayMessage Message);
-	public record YearSelectedAction(int Year);
 	public record IncomeExpenseFetchedAction(IncomeExpenseState State, int Year, string? EntityTag = null);
 	public record IncomeExpenseFetchingAction(string Uri);
 	public record IncomeExpenseFetchingErrorAction(DisplayMessage Message);
