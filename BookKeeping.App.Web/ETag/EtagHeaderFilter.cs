@@ -48,7 +48,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters
 			}
 		}
 
-		private void ProcessResult(
+		private static void ProcessResult(
 			ActionExecutedContext context,
 			OkObjectResult okResult,
 			IEtagHandlerFeature handler

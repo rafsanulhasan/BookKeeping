@@ -24,11 +24,9 @@ namespace BookKeeping.App.Web.Pages
 		private string _message = string.Empty;
 		private string _error = string.Empty;
 		private int _selectedYear;
-		private ICollection<int>? _years = null;
 		private IncomeExpenseDto? _dto = null;
 		private bool _invalidSelection = true;
 		private bool _isLoading = true;
-		private bool _isLoaded = true;
 
 		[Inject]
 		public HttpClient? Http { get; set; }
@@ -51,7 +49,6 @@ namespace BookKeeping.App.Web.Pages
 		private void IncomeExpenseStateChanged(object? sender, IncomeExpenseState e)
 		{
 			_isLoading = e.IsLoading;
-			_isLoaded = e.IsLoaded;
 			_invalidSelection = _selectedYear <= 0;
 			Logger.LogInformation(_selectedYear.ToString());
 			if (e.Data is not null
@@ -96,8 +93,6 @@ namespace BookKeeping.App.Web.Pages
 						break;
 				};
 			}
-			if (e.Data is not null)
-				_years = e.Data;
 			StateHasChanged();
 		}
 
