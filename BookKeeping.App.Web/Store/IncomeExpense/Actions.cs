@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BookKeeping.App.Web.Store.IncomeExpense
+﻿namespace BookKeeping.App.Web.Store.IncomeExpense
 {
 	public record IncomeExpenseFetchedAction(IncomeExpenseState State, int Year, string? EntityTag = null);
 	public record IncomeExpenseFetchingAction(string Uri);
