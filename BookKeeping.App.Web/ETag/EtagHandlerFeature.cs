@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using System;
 using System.Security.Cryptography;
 
-using static Microsoft.AspNetCore.Mvc.CacheRequestHeadersConst;
-
 namespace Microsoft.AspNetCore.Mvc.Filters
 {
 	internal class EtagHandlerFeature

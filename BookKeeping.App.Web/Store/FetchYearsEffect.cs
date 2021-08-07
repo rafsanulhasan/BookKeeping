@@ -3,7 +3,7 @@ using BookKeeping.API.DTOs;
 
 using Fluxor;
 
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 using Newtonsoft.Json;
 
@@ -35,7 +35,7 @@ namespace BookKeeping.App.Web.Store
 			if (!string.IsNullOrWhiteSpace(_state.Value.EntityTag))
 			{
 				_http.DefaultRequestHeaders.Add(
-					CacheRequestHeadersConst.IfNoneMatch,
+					HeaderNames.IfNoneMatch,
 					_state.Value.EntityTag
 				);
 			}

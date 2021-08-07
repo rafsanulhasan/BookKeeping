@@ -2,7 +2,7 @@
 
 using Fluxor;
 
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 using Newtonsoft.Json;
 
@@ -28,7 +28,7 @@ namespace BookKeeping.App.Web.Store
 				return null;
 
 			if (!string.IsNullOrWhiteSpace(_state.Value.EntityTag))
-				_http.DefaultRequestHeaders.Add(CacheRequestHeadersConst.IfNoneMatch, _state.Value.EntityTag);
+				_http.DefaultRequestHeaders.Add(HeaderNames.IfNoneMatch, _state.Value.EntityTag);
 
 			var uri = $"api/transactions/{year}";
 			return await _http!

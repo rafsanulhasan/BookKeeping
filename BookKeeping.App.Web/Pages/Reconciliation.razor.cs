@@ -95,37 +95,8 @@ namespace BookKeeping.App.Web.Pages
 			StateHasChanged();
 		}
 
-		private void GetYears()
-		{
-			Dispatcher?.Dispatch(new FetchYearsAction());
-			//try
-			//{
-			//	var uri = "api/transactions/years";
-			//	if (HttpStates.ETags.TryGetValue(uri, out string? eTag))
-			//	{
-			//		Http!.DefaultRequestHeaders.Add(CacheRequestHeadersConst.IfNoneMatch, eTag);
-			//	}
-			//	//var resource = await Http!.GetFromJsonAsync<ApiResource<YearsList>>(uri);
-			//	//Logger.LogInformation(resource!.GetEtag());
-			//	var response = await Http!.GetAsync($"{Http.BaseAddress}{uri}").ConfigureAwait(true);
-			//	if (response!.StatusCode.Equals(HttpStatusCode.OK))
-			//	{
-			//		if (response.Headers.ETag is not null)
-			//		{
-			//			HttpStates.ETags.TryAdd(uri, response.Headers.ETag.Tag);
-			//		}
-			//		var resourceJson = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-			//		Logger.LogInformation(resourceJson);
-			//		var resource = JsonConvert.DeserializeObject<YearsList>(resourceJson);
-			//		_years = resource!.Years;
-			//	}
-			//}
-			//catch (Exception ex)
-			//{
-			//	_error = ex.Message;
-			//	Logger.LogError(ex.Message);
-			//}
-		}
+		private void GetYears() 
+			=> Dispatcher?.Dispatch(new FetchYearsAction());
 
 		private void OnChange(ChangeEventArgs args)
 		{
@@ -138,64 +109,6 @@ namespace BookKeeping.App.Web.Pages
 				else
 					_error = "Please select a valid year";
 			}
-			//Logger.LogInformation($"Selected {val}");
-			//if (_selectedYear > 0)
-			//{
-			//	var uri = $"api/transactions/{args.Value}";
-			//	try
-			//	{
-			//		_isLoading = true;
-			//		_invalidSelection = false;
-			//		if (HttpStates.ETags.TryGetValue(uri, out var eTag))
-			//		{
-			//			Http!.DefaultRequestHeaders.Add(CacheRequestHeadersConst.IfNoneMatch, eTag);
-			//		}
-			//		var response = await Http!.GetAsync($"{Http.BaseAddress}{uri}").ConfigureAwait(false);
-
-			//		Logger.LogInformation(JsonConvert.SerializeObject(response));
-			//		if (response is not null)
-			//		{
-			//			if (response.Headers.ETag is not null)
-			//			{
-			//				HttpStates.ETags.TryAdd(uri, response.Headers.ETag.Tag);
-			//			}
-			//			_isLoading = false;
-			//			Logger.LogInformation("response succeeded");
-			//			Debug.WriteLine("rs");
-			//			var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-			//			Logger.LogInformation(json);
-			//			var dto = JsonConvert.DeserializeObject<IncomeExpenseDto>(json);
-			//			if (dto is not null
-			//			 && !string.IsNullOrWhiteSpace(response.ReasonPhrase)
-			//			 && response.ReasonPhrase.Equals("OK")
-			//			)
-			//			{
-			//				_isLoading = false;
-			//				_invalidSelection = false;
-			//				_dto = dto;
-			//			}
-			//			if (response.StatusCode.Equals(StatusCodes.Status304NotModified)
-			//			 || (!string.IsNullOrWhiteSpace(response.ReasonPhrase) && response.ReasonPhrase.Equals("Not Modified"))
-			//			)
-			//			{
-			//				_error = "Response got from cache";
-			//			}
-			//		}
-			//	}
-			//	catch (Exception ex)
-			//	{
-			//		_isLoading = false;
-			//		_invalidSelection = false;
-			//		_error = ex.Message;
-			//	}
-			//}
-			//else
-			//{
-			//	_isLoading = false;
-			//	_invalidSelection = true;
-			//	_error = "Please select valid option";
-			//}
-			//StateHasChanged();
 		}
 
 		protected override void OnInitialized()

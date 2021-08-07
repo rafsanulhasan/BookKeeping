@@ -1,19 +1,15 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.Net.Http.Headers;
+
+using System.ComponentModel;
 
 namespace Microsoft.AspNetCore.Mvc
 {
-	public static class CacheRequestHeadersConst
+	public enum CacheRequestHeaders
 	{
-		public const string IfNoneMatch = "If-None-Match";
-		public const string IfMatch = "If-Match";
+		[Description(HeaderNames.IfNoneMatch)]
+		IfNoneMatch,
 
-		public enum CacheRequestHeaders
-		{
-			[Description(CacheRequestHeadersConst.IfNoneMatch)]
-			IfNoneMatch,
-
-			[Description(CacheRequestHeadersConst.IfMatch)]
-			IfMatch
-		}
+		[Description(HeaderNames.IfMatch)]
+		IfMatch
 	}
 }
