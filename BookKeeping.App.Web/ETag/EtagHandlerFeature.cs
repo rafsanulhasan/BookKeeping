@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.Net.Http.Headers;
 
 using System;
 using System.Security.Cryptography;
@@ -27,8 +28,8 @@ namespace Microsoft.AspNetCore.Mvc.Filters
 		)
 		{
 			var headerName = header == CacheRequestHeaders.IfMatch 
-				          ? IfMatch 
-						: IfNoneMatch;
+				          ? HeaderNames.IfMatch
+						: HeaderNames.IfNoneMatch;
 
 			var headerHasValue = _headers.TryGetValue(
 				headerName, 
