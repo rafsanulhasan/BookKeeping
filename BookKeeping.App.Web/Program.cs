@@ -1,3 +1,5 @@
+using Fluxor;
+
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,9 +15,12 @@ namespace BookKeeping.App.Web
 		{
 			var builder = WebAssemblyHostBuilder
 							.CreateDefault(args);
+
 			builder.RootComponents.Add<App>("#app");
 
-			builder.Services.AddScoped(sp 
+			var services = builder.Services;
+
+			services.AddScoped(sp 
 				=> {
 					var http = new HttpClient
 					{
@@ -28,7 +33,13 @@ namespace BookKeeping.App.Web
 				}
 			);
 
-			builder.Services.AddLogging();
+			services.AddFluxor(c =>
+			{
+				c.ScanAssemblies(typeof(Program).Assembly);
+				c.UseReduxDevTools();
+			});
+
+			services.AddLogging();
 
 			await builder.Build().RunAsync();
 		}

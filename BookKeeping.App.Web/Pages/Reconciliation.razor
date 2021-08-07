@@ -1,105 +1,106 @@
 ﻿@page "/reconciliation"
+@inherits FluxorComponent
 
 <h1>Incomes and Expenses with Cumuliative Accounts</h1>
 
-@if (_years is null)
+@if (YearsState!.Value.IsLoading)
 {
-	<p><em>Loading...</em></p>
+    <p><em>Loading...</em></p>
 }
-else
+else if (YearsState!.Value.IsLoaded)
 {
-	<select @bind="_selectedYear"
-		   @bind:event="oninput"
-		   @onchange="OnChange">
-		<option selected="selected" value="0">Select an option</option>
-		@foreach (var y in _years)
-		{
-			<option value="@y">@y</option>
-		}
-	</select>
-	<button @onclick="async () => await GetYears()">Refresh</button>
-	@if (!_invalidSelection && _isLoading && _dto is null)
-	{
-		<div>Loading</div>
-	}
-	else if (_dto is null
-	 && !_invalidSelection
-	 && !_isLoading
-	)
-	{
-		<div>No data available</div>
-	}
-	else if (_invalidSelection)
-	{
-		<div class="danger">Please select a valid option</div>
-	}
-	else if (_dto is not null && !_invalidSelection && !_isLoading)
-	{
-		<table>
-			<thead>
-				<tr>
-					<th colspan="14" style="text-align: center">
-						Year @_selectedYear
-					</th>
-				</tr>
-				<tr>
-					<th style="padding:5px"></th>
-					<th style="padding:5px"></th>
-					@for (var m = 1; m <= 12; m++)
-					{
-						<th style="padding:5px; text-align:center">
-							@DateTime.Parse($"{m}/1/{_selectedYear}").ToString("MMM")
-						</th>
-					}
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td style="padding:5px"></td>
-					<th style="padding: 5px; text-align: right">Incomes</th>
-					@foreach (var d in _dto.Incomes)
-					{
-						<td style="padding: 5px; text-align: center">@d.Value</td>
-					}
-				</tr>
-				<tr>
-					<td style="padding:5px"></td>
-					<th style="padding: 5px; text-align: right">Cumuliative Incomes</th>
-					@foreach (var d in _dto.CumuliativeIncomes)
-					{
-						<td style="padding: 5px; text-align: center">@d.Value</td>
-					}
-				</tr>
-				<tr>
-					<td style="padding:5px"></td>
-					<th style="padding: 5px; text-align: right">Expenses</th>
-					@foreach (var d in _dto.Expenses)
-					{
-						<td style="padding: 5px; text-align: center">@d.Value</td>
-					}
-				</tr>
-				<tr>
-					<td style="padding:5px"></td>
-					<th style="padding: 5px; text-align: right">Cumuliative Expenses</th>
-					@foreach (var d in _dto.CumuliativeExpenses)
-					{
-						<td style="padding: 5px; text-align: center">@d.Value</td>
-					}
-				</tr>
-				<tr>
-					<td style="padding:5px"></td>
-					<th style="padding: 5px; text-align: right">Result</th>
-					@foreach (var d in _dto.Result)
-					{
-						<td style="padding: 5px; text-align: center">@d.Value</td>
-					}
-				</tr>
-			</tbody>
-		</table>
-	}
+    <select @bind="_selectedYear"
+        @bind:event="oninput"
+        @onchange="OnChange">
+        <option selected="selected" value="0">Select an option</option>
+        @if (YearsState.Value.Data is not null)
+        {
+            foreach (var y in YearsState.Value.Data)
+            {
+                <option value="@y">@y</option>
+            }
+        }
+    </select>
+    <button @onclick="GetYears">Refresh</button>
+    @if (_invalidSelection)
+    {
+        <div class="danger">Please select a valid option</div>
+    }
+    else if (_isLoading)
+    {
+        <div>Loading</div>
+    }
+    else if (_dto is null)
+    {
+        <div>No data available</div>
+    }
+    else
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="14" style="text-align: center">
+                        Year @_selectedYear
+                    </th>
+                </tr>
+                <tr>
+                    <th style="padding:5px"></th>
+                    <th style="padding:5px"></th>
+                    @for (var m = 1; m <= 12; m++)
+                    {
+                        <th style="padding:5px; text-align:center">
+                            @DateTime.Parse($"{m}/1/{_selectedYear}").ToString("MMM")
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding:5px"></td>
+                    <th style="padding: 5px; text-align: right">Incomes</th>
+                    @foreach (var d in _dto.Incomes)
+                    {
+                        <td style="padding: 5px; text-align: center">@d.Value</td>
+                    }
+                </tr>
+                <tr>
+                    <td style="padding:5px"></td>
+                    <th style="padding: 5px; text-align: right">Cumuliative Incomes</th>
+                    @foreach (var d in _dto.CumuliativeIncomes)
+                    {
+                        <td style="padding: 5px; text-align: center">@d.Value</td>
+                    }
+                </tr>
+                <tr>
+                    <td style="padding:5px"></td>
+                    <th style="padding: 5px; text-align: right">Expenses</th>
+                    @foreach (var d in _dto.Expenses)
+                    {
+                        <td style="padding: 5px; text-align: center">@d.Value</td>
+                    }
+                </tr>
+                <tr>
+                    <td style="padding:5px"></td>
+                    <th style="padding: 5px; text-align: right">Cumuliative Expenses</th>
+                    @foreach (var d in _dto.CumuliativeExpenses)
+                    {
+                        <td style="padding: 5px; text-align: center">@d.Value</td>
+                    }
+                </tr>
+                <tr>
+                    <td style="padding:5px"></td>
+                    <th style="padding: 5px; text-align: right">Result</th>
+                    @foreach (var d in _dto.Result)
+                    {
+                        <td style="padding: 5px; text-align: center">@d.Value</td>
+                    }
+                </tr>
+            </tbody>
+        </table>
+    }
 }
 
 @if (!string.IsNullOrWhiteSpace(_error))
 {
-	<div>@_error</div>
+    <div>@_error</div>
 }
