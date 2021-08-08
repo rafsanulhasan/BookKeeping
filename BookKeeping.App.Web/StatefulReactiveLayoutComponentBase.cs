@@ -48,7 +48,7 @@ namespace BookKeeping.App.Web
 		public void SubscribeToAction<TAction>(Action<TAction> callback)
 		{
 			ActionSubscriber?.SubscribeToAction<TAction>(
-				this, 
+				this,
 				action =>
 				{
 					if (!_disposed)
@@ -64,7 +64,7 @@ namespace BookKeeping.App.Web
 		{
 			base.OnInitialized();
 			_stateSubscription = StateSubscriber.Subscribe(
-				this, 
+				this,
 				_ =>
 				{
 					_stateHasChangedThrottler.Invoke(

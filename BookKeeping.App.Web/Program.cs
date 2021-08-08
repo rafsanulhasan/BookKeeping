@@ -35,7 +35,6 @@ namespace BookKeeping.App.Web
 				http.DefaultRequestHeaders.Add(HeaderNames.CacheControl, "public,max-age=60");
 				return http;
 			});
-			services.AddScoped<IncomeExpenseViewModel>();
 
 			services.AddFluxor(c =>
 			{
@@ -43,6 +42,8 @@ namespace BookKeeping.App.Web
 				if (hostEnvironment.IsDevelopment())
 					c.UseReduxDevTools();
 			});
+
+			services.AddScoped<IncomeExpenseViewModel>();
 
 			services.AddLogging();
 
