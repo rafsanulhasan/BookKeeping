@@ -1,5 +1,3 @@
-using BookKeeping.App.Web.ViewModels;
-
 using Fluxor;
 
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -35,7 +33,6 @@ namespace BookKeeping.App.Web
 				http.DefaultRequestHeaders.Add(HeaderNames.CacheControl, "public,max-age=60");
 				return http;
 			});
-			services.AddScoped<IncomeExpenseViewModel>();
 
 			services.AddFluxor(c =>
 			{
