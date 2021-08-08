@@ -3,19 +3,19 @@
 
 <h1>Incomes and Expenses with Cumuliative Accounts</h1>
 
-@if (ViewModel!.YearsState!.Value.IsLoading)
+@if (YearsState!.Value.IsLoading)
 {
     <p><em>Loading...</em></p>
 }
-else if (ViewModel!.YearsState!.Value.IsLoaded)
+else if (YearsState!.Value.IsLoaded)
 {
     <select @bind="_selectedYear"
         @bind:event="oninput"
         @onchange="OnChange">
         <option selected="selected" value="0">Select an option</option>
-        @if (ViewModel!.YearsState.Value.Data is not null)
+        @if (YearsState.Value.Data is not null)
         {
-            foreach (var y in ViewModel!.YearsState.Value.Data)
+            foreach (var y in YearsState.Value.Data)
             {
                 <option value="@y">@y</option>
             }

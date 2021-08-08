@@ -3,19 +3,14 @@ using BookKeeping.API.DTOs;
 using BookKeeping.App.Web.Store.EntityTag;
 using BookKeeping.App.Web.Store.IncomeExpense;
 using BookKeeping.App.Web.Store.Years;
-using BookKeeping.App.Web.ViewModels;
 
 using Fluxor;
-using Fluxor.Blazor.Web.Components;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 
-using ReactiveUI;
-
 using System;
 using System.Net.Http;
-using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
@@ -37,10 +32,19 @@ namespace BookKeeping.App.Web.Pages
 		public HttpClient? Http { get; set; }
 
 		[Inject]
-		public new IncomeExpenseViewModel? ViewModel { get; set; }
+		public ILogger<Reconciliation>? Logger { get; set; }
 
 		[Inject]
-		public ILogger<Reconciliation>? Logger { get; set; }
+		public IState<IncomeExpenseState>? IncomeExpenseState { get; set; }
+
+		[Inject]
+		public IState<YearsState>? YearsState { get; set; }
+
+		[Inject]
+		public IState<EntityTagState>? EntityTagState { get; set; }
+
+		[Inject]
+		public IDispatcher? Dispatcher { get; set; }
 
 		private void IncomeExpenseStateChanged(object? _, IncomeExpenseState e)
 		{
@@ -95,24 +99,22 @@ namespace BookKeeping.App.Web.Pages
 
 		private void GetYears()
 		{
-			if (ViewModel is not null)
-			{
-				if (ViewModel.EntityTagState!.Value.EntityTags.TryGetValue("api/transactions/years", out var eTag))
-					ViewModel.Dispatcher?.Dispatch(new FetchYearsAction(eTag));
-				else
-					ViewModel.Dispatcher?.Dispatch(new FetchYearsAction());
-			}
+			if (EntityTagState is not null
+			 && EntityTagState.Value.EntityTags.TryGetValue("api/transactions/years", out var eTag)
+			)
+				Dispatcher?.Dispatch(new FetchYearsAction(eTag));
+			else
+				Dispatcher?.Dispatch(new FetchYearsAction());
 		}
 
 		private void OnChange(ChangeEventArgs args)
 		{
 			if (args.Value is not null
 			 && int.TryParse(args.Value.ToString(), out var selectedYear)
-			 && ViewModel is not null
 			)
 			{
 				if (selectedYear > 0)
-					ViewModel.Dispatcher?.Dispatch(new YearSelectedAction(selectedYear));
+					Dispatcher?.Dispatch(new YearSelectedAction(selectedYear));
 				else
 					_error = "Please select a valid year";
 			}
@@ -124,27 +126,24 @@ namespace BookKeeping.App.Web.Pages
 			GetYears();
 			StateHasChanged();
 
-			if (ViewModel is not null)
+			if (YearsState is not null)
 			{
-				if (ViewModel.YearsState is not null)
-				{
-					Observable.FromEventPattern<YearsState>(
-						eh => ViewModel.YearsState.StateChanged += eh,
-						eh => ViewModel.YearsState.StateChanged -= eh
-					)
-					.Subscribe(ep => YearsStateChanged(ep.Sender, ep.EventArgs))
-					.DisposeWith(_disposables);
-				}
+				Observable.FromEventPattern<YearsState>(
+					eh => YearsState.StateChanged += eh,
+					eh => YearsState.StateChanged -= eh
+				)
+				.Subscribe(ep => YearsStateChanged(ep.Sender, ep.EventArgs))
+				.DisposeWith(_disposables);
+			}
 
-				if (ViewModel.IncomeExpenseState is not null)
-				{
-					Observable.FromEventPattern<IncomeExpenseState>(
-						eh => ViewModel.IncomeExpenseState.StateChanged += eh,
-						eh => ViewModel.IncomeExpenseState.StateChanged -= eh
-					)
-					.Subscribe(ep => IncomeExpenseStateChanged(ep.Sender, ep.EventArgs))
-					.DisposeWith(_disposables);
-				}
+			if (IncomeExpenseState is not null)
+			{
+				Observable.FromEventPattern<IncomeExpenseState>(
+					eh => IncomeExpenseState.StateChanged += eh,
+					eh => IncomeExpenseState.StateChanged -= eh
+				)
+				.Subscribe(ep => IncomeExpenseStateChanged(ep.Sender, ep.EventArgs))
+				.DisposeWith(_disposables);
 			}
 		}
 	}

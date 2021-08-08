@@ -1,6 +1,6 @@
 ﻿namespace BookKeeping.App.Web.Store.IncomeExpense
 {
-	public record IncomeExpenseFetchedAction(IncomeExpenseState State, int Year, string? EntityTag = null);
+	public record IncomeExpenseFetchedAction(IncomeExpenseState State, int Year);
 	public record IncomeExpenseFetchingAction(string Uri);
 	public record IncomeExpenseFetchingErrorAction(DisplayMessage Message);
 	public record IncomeExpenseProcessedAction(IncomeExpenseState State);
