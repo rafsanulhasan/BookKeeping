@@ -3,6 +3,7 @@ using BookKeeping.API.DTOs;
 using BookKeeping.App.Web.Store.EntityTag;
 using BookKeeping.App.Web.Store.IncomeExpense;
 using BookKeeping.App.Web.Store.Years;
+using BookKeeping.App.Web.ViewModels;
 
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
@@ -10,14 +11,19 @@ using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 
+using ReactiveUI;
+
+using System;
 using System.Net.Http;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 
 using static BookKeeping.App.Web.Store.DisplayMessage;
 
 namespace BookKeeping.App.Web.Pages
 {
 	public partial class Reconciliation
-		: FluxorComponent
 	{
 		private string _message = string.Empty;
 		private string _error = string.Empty;
@@ -25,26 +31,18 @@ namespace BookKeeping.App.Web.Pages
 		private IncomeExpenseDto? _dto = null;
 		private bool _invalidSelection = true;
 		private bool _isLoading = true;
+		private readonly CompositeDisposable _disposables = new();
 
 		[Inject]
 		public HttpClient? Http { get; set; }
 
 		[Inject]
-		public IState<IncomeExpenseState>? IncomeExpenseState { get; set; }
-
-		[Inject]
-		public IState<YearsState>? YearsState { get; set; }
-
-		[Inject]
-		public IState<EntityTagState>? EntityTagState { get; set; }
-
-		[Inject]
-		public IDispatcher? Dispatcher { get; set; }
+		public new IncomeExpenseViewModel? ViewModel { get; set; }
 
 		[Inject]
 		public ILogger<Reconciliation>? Logger { get; set; }
 
-		private void IncomeExpenseStateChanged(object? sender, IncomeExpenseState e)
+		private void IncomeExpenseStateChanged(object? _, IncomeExpenseState e)
 		{
 			_isLoading = e.IsLoading;
 			_invalidSelection = _selectedYear <= 0;
@@ -71,9 +69,10 @@ namespace BookKeeping.App.Web.Pages
 						break;
 				}
 			}
+			StateHasChanged();
 		}
 
-		private void YearsStateChanged(object? sender, YearsState e)
+		private void YearsStateChanged(object? _, YearsState e)
 		{
 			_isLoading = e.IsLoading;
 
@@ -96,20 +95,24 @@ namespace BookKeeping.App.Web.Pages
 
 		private void GetYears()
 		{
-			if (EntityTagState!.Value.EntityTags.TryGetValue("api/transactions/years", out var eTag))
-				Dispatcher?.Dispatch(new FetchYearsAction(eTag));
-			else
-				Dispatcher?.Dispatch(new FetchYearsAction());
+			if (ViewModel is not null)
+			{
+				if (ViewModel.EntityTagState!.Value.EntityTags.TryGetValue("api/transactions/years", out var eTag))
+					ViewModel.Dispatcher?.Dispatch(new FetchYearsAction(eTag));
+				else
+					ViewModel.Dispatcher?.Dispatch(new FetchYearsAction());
+			}
 		}
 
 		private void OnChange(ChangeEventArgs args)
 		{
 			if (args.Value is not null
 			 && int.TryParse(args.Value.ToString(), out var selectedYear)
+			 && ViewModel is not null
 			)
 			{
 				if (selectedYear > 0)
-					Dispatcher?.Dispatch(new YearSelectedAction(selectedYear));
+					ViewModel.Dispatcher?.Dispatch(new YearSelectedAction(selectedYear));
 				else
 					_error = "Please select a valid year";
 			}
@@ -118,21 +121,31 @@ namespace BookKeeping.App.Web.Pages
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
-			if (YearsState is not null)
-				YearsState.StateChanged += YearsStateChanged;
-			if (IncomeExpenseState is not null)
-				IncomeExpenseState.StateChanged += IncomeExpenseStateChanged;
 			GetYears();
 			StateHasChanged();
-		}
 
-		protected override void Dispose(bool disposing)
-		{
-			if (YearsState is not null)
-				YearsState.StateChanged -= YearsStateChanged;
-			if (IncomeExpenseState is not null)
-				IncomeExpenseState.StateChanged -= IncomeExpenseStateChanged;
-			base.Dispose(disposing);
+			if (ViewModel is not null)
+			{
+				if (ViewModel.YearsState is not null)
+				{
+					Observable.FromEventPattern<YearsState>(
+						eh => ViewModel.YearsState.StateChanged += eh,
+						eh => ViewModel.YearsState.StateChanged -= eh
+					)
+					.Subscribe(ep => YearsStateChanged(ep.Sender, ep.EventArgs))
+					.DisposeWith(_disposables);
+				}
+
+				if (ViewModel.IncomeExpenseState is not null)
+				{
+					Observable.FromEventPattern<IncomeExpenseState>(
+						eh => ViewModel.IncomeExpenseState.StateChanged += eh,
+						eh => ViewModel.IncomeExpenseState.StateChanged -= eh
+					)
+					.Subscribe(ep => IncomeExpenseStateChanged(ep.Sender, ep.EventArgs))
+					.DisposeWith(_disposables);
+				}
+			}
 		}
 	}
 }

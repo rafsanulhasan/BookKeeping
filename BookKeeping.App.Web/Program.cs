@@ -41,6 +41,8 @@ namespace BookKeeping.App.Web
 					c.UseReduxDevTools();
 			});
 
+			services.AddScoped<IncomeExpenseViewModel>();
+
 			services.AddLogging();
 
 			await builder.Build().RunAsync();
