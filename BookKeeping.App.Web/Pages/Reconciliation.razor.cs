@@ -1,13 +1,21 @@
 ﻿
 using BookKeeping.API.DTOs;
+using BookKeeping.App.Web.Store.EntityTag;
 using BookKeeping.App.Web.Store.IncomeExpense;
 using BookKeeping.App.Web.Store.Years;
 using BookKeeping.App.Web.ViewModels;
 
+using Fluxor;
+using Fluxor.Blazor.Web.Components;
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 
+using ReactiveUI;
+
 using System;
+using System.Net.Http;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
@@ -24,6 +32,9 @@ namespace BookKeeping.App.Web.Pages
 		private bool _invalidSelection = true;
 		private bool _isLoading = true;
 		private readonly CompositeDisposable _disposables = new();
+
+		[Inject]
+		public HttpClient? Http { get; set; }
 
 		[Inject]
 		public new IncomeExpenseViewModel? ViewModel { get; set; }
