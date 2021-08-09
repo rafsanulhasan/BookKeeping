@@ -3,6 +3,8 @@ using BookKeeping.App.Web.Store.Years;
 
 using Fluxor;
 
+using Microsoft.AspNetCore.Components;
+
 using ReactiveUI;
 
 namespace BookKeeping.App.Web.ViewModels
@@ -12,6 +14,13 @@ namespace BookKeeping.App.Web.ViewModels
 	{
 		public IDispatcher Dispatcher { get; }
 		public IState<EntityTagState> EntityTagState { get; }
+
+		private string _errorMessage;
+		public string ErrorMessage
+		{
+			get => _errorMessage;
+			set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
+		}
 
 		public IncomeExpenseViewModel(
 			IDispatcher dispatcher,
@@ -31,6 +40,19 @@ namespace BookKeeping.App.Web.ViewModels
 				Dispatcher?.Dispatch(new FetchYearsAction(eTag));
 			else
 				Dispatcher?.Dispatch(new FetchYearsAction());
+		}
+
+		public void OnChange(ChangeEventArgs args)
+		{
+			if (args.Value is not null
+			 && int.TryParse(args.Value.ToString(), out var selectedYear)
+			)
+			{
+				if (selectedYear > 0)
+					Dispatcher?.Dispatch(new YearSelectedAction(selectedYear));
+				else
+					ErrorMessage = "Please select a valid year";
+			}
 		}
 	}
 }

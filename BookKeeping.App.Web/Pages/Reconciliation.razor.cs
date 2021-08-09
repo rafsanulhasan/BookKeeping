@@ -79,19 +79,6 @@ namespace BookKeeping.App.Web.Pages
 			StateHasChanged();
 		}
 
-		private void OnChange(ChangeEventArgs args)
-		{
-			if (args.Value is not null
-			 && int.TryParse(args.Value.ToString(), out var selectedYear)
-			)
-			{
-				if (selectedYear > 0)
-					Dispatcher?.Dispatch(new YearSelectedAction(selectedYear));
-				else
-					_error = "Please select a valid year";
-			}
-		}
-
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();

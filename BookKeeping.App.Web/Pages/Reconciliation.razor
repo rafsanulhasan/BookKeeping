@@ -18,7 +18,7 @@ else if (YearsState!.Value.IsLoaded)
 {
     <select @bind="_selectedYear"
         @bind:event="oninput"
-        @onchange="OnChange">
+        @onchange="ViewModel.OnChange">
         <option selected="selected" value="0">Select an option</option>
         @if (YearsState.Value.Data is not null)
         {
