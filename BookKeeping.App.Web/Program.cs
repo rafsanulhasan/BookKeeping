@@ -1,4 +1,6 @@
 
+using BookKeeping.App.Web.ViewModels;
+
 using Fluxor;
 
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -41,6 +43,8 @@ namespace BookKeeping.App.Web
 				if (hostEnvironment.IsDevelopment())
 					c.UseReduxDevTools();
 			});
+
+			services.AddScoped<IncomeExpenseViewModel>();
 
 			services.AddLogging();
 

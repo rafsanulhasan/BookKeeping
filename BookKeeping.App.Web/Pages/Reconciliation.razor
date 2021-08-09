@@ -1,9 +1,16 @@
 ﻿@page "/reconciliation"
 @inherits FluxorComponent
 
+@inject IncomeExpenseViewModel ViewModel
+@inject ILogger<Reconciliation> Logger
+@inject IState<IncomeExpenseState> IncomeExpenseState 
+@inject IState<YearsState> YearsState 
+@inject IState<EntityTagState> EntityTagState
+@inject IDispatcher Dispatcher
+
 <h1>Incomes and Expenses with Cumuliative Accounts</h1>
 
-@if (YearsState!.Value.IsLoading)
+@if (YearsState.Value.IsLoading)
 {
     <p><em>Loading...</em></p>
 }
@@ -21,7 +28,7 @@ else if (YearsState!.Value.IsLoaded)
             }
         }
     </select>
-    <button @onclick="GetYears">Refresh</button>
+    <button @onclick="ViewModel.GetYears">Refresh</button>
     @if (_invalidSelection)
     {
         <div class="danger">Please select a valid option</div>

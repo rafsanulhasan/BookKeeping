@@ -28,24 +28,6 @@ namespace BookKeeping.App.Web.Pages
 		private bool _isLoading = true;
 		private readonly CompositeDisposable _disposables = new();
 
-		[Inject]
-		public HttpClient? Http { get; set; }
-
-		[Inject]
-		public ILogger<Reconciliation>? Logger { get; set; }
-
-		[Inject]
-		public IState<IncomeExpenseState>? IncomeExpenseState { get; set; }
-
-		[Inject]
-		public IState<YearsState>? YearsState { get; set; }
-
-		[Inject]
-		public IState<EntityTagState>? EntityTagState { get; set; }
-
-		[Inject]
-		public IDispatcher? Dispatcher { get; set; }
-
 		private void IncomeExpenseStateChanged(object? _, IncomeExpenseState e)
 		{
 			_isLoading = e.IsLoading;
@@ -123,14 +105,14 @@ namespace BookKeeping.App.Web.Pages
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
-			GetYears();
+			ViewModel.GetYears();
 			StateHasChanged();
 
 			if (YearsState is not null)
 			{
 				Observable.FromEventPattern<YearsState>(
-					eh => YearsState.StateChanged += eh,
-					eh => YearsState.StateChanged -= eh
+					eh => YearsState.Value.StateChanged += eh,
+					eh => YearsState.Value.StateChanged -= eh
 				)
 				.Subscribe(ep => YearsStateChanged(ep.Sender, ep.EventArgs))
 				.DisposeWith(_disposables);
@@ -139,8 +121,8 @@ namespace BookKeeping.App.Web.Pages
 			if (IncomeExpenseState is not null)
 			{
 				Observable.FromEventPattern<IncomeExpenseState>(
-					eh => IncomeExpenseState.StateChanged += eh,
-					eh => IncomeExpenseState.StateChanged -= eh
+					eh => IncomeExpenseState.Value.StateChanged += eh,
+					eh => IncomeExpenseState.Value.StateChanged -= eh
 				)
 				.Subscribe(ep => IncomeExpenseStateChanged(ep.Sender, ep.EventArgs))
 				.DisposeWith(_disposables);
