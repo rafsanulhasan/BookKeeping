@@ -79,16 +79,6 @@ namespace BookKeeping.App.Web.Pages
 			StateHasChanged();
 		}
 
-		private void GetYears()
-		{
-			if (EntityTagState is not null
-			 && EntityTagState.Value.EntityTags.TryGetValue("api/transactions/years", out var eTag)
-			)
-				Dispatcher?.Dispatch(new FetchYearsAction(eTag));
-			else
-				Dispatcher?.Dispatch(new FetchYearsAction());
-		}
-
 		private void OnChange(ChangeEventArgs args)
 		{
 			if (args.Value is not null
@@ -111,8 +101,8 @@ namespace BookKeeping.App.Web.Pages
 			if (YearsState is not null)
 			{
 				Observable.FromEventPattern<YearsState>(
-					eh => YearsState.Value.StateChanged += eh,
-					eh => YearsState.Value.StateChanged -= eh
+					eh => YearsState.StateChanged += eh,
+					eh => YearsState.StateChanged -= eh
 				)
 				.Subscribe(ep => YearsStateChanged(ep.Sender, ep.EventArgs))
 				.DisposeWith(_disposables);
@@ -121,8 +111,8 @@ namespace BookKeeping.App.Web.Pages
 			if (IncomeExpenseState is not null)
 			{
 				Observable.FromEventPattern<IncomeExpenseState>(
-					eh => IncomeExpenseState.Value.StateChanged += eh,
-					eh => IncomeExpenseState.Value.StateChanged -= eh
+					eh => IncomeExpenseState.StateChanged += eh,
+					eh => IncomeExpenseState.StateChanged -= eh
 				)
 				.Subscribe(ep => IncomeExpenseStateChanged(ep.Sender, ep.EventArgs))
 				.DisposeWith(_disposables);
