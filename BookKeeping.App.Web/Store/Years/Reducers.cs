@@ -1,33 +1,41 @@
 ﻿using Fluxor;
 
-using static BookKeeping.App.Web.Store.DisplayMessage;
-
-namespace BookKeeping.App.Web.Store.Years
+namespace BookKeeping.App.Web.Store
 {
-	public static class Reducers
+	public static partial class Reducers
 	{
 		[ReducerMethod]
-		public static YearsState UpdateYearsState(
-			YearsState state,
+		public static ApplicationState UpdateYearsState(
+			ApplicationState state,
 			YearsFetchedAction action
 		)
 			=> state with
 			{
-				Data = action.Years,
-				IsLoading = false,
-				IsLoaded = true
+				YearsState = action.State.YearsState ?? state.YearsState,
+				EntityTags = action.State.EntityTags ?? state.EntityTags,
+				IncomeExpenseStatsByYear = state.IncomeExpenseStatsByYear,
+				SelectedIncomeExpense = state.SelectedIncomeExpense,
+				IsLoading = action.State.YearsState?.IsLoading ?? state.YearsState?.IsLoading ?? false,
+				IsLoaded = action.State.YearsState?.IsLoaded ?? state.YearsState?.IsLoaded ?? true,
+				IsFailed = action.State.YearsState?.IsFailed ?? state.YearsState?.IsFailed ?? false,
+				IsProcessing = state.IsProcessing,
+				IsProcessed = state.IsProcessed,
+				DisplayMessage = action.State.YearsState?.DisplayMessage
 			};
 
 		[ReducerMethod]
-		public static YearsState FetchJsonYearsState(
-			YearsState state,
-			YearsFetchedInJsonAction action
+		public static ApplicationState UpdateYearsState(
+			ApplicationState state,
+			YearSelectedAction action
 		)
 			=> state with
 			{
-				Message = new($"Fetched years with {action.Json}", MessageType.Information),
-				IsLoading = false,
-				IsLoaded = true
+				SelectedYear = action.State.SelectedYear,
+				SelectedIncomeExpense = action.State.SelectedIncomeExpense,
+				IsLoading = action.State.YearsState?.IsLoading ?? false,
+				IsLoaded = action.State.YearsState?.IsLoaded ?? true,
+				IsFailed = action.State.YearsState?.IsFailed ?? false,
+				DisplayMessage = action.State.YearsState?.DisplayMessage
 			};
 	}
 }

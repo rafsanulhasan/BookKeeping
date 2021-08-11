@@ -1,7 +1,8 @@
-﻿namespace BookKeeping.App.Web.Store.IncomeExpense
+﻿namespace BookKeeping.App.Web.Store
 {
-	public record IncomeExpenseFetchedAction(IncomeExpenseState State, int Year);
-	public record IncomeExpenseFetchingAction(string Uri);
+	public record IncomeExpensesUpdatedAction(ApplicationState States);
+	public record IncomeExpenseFetchedAction(ApplicationState State);
+	public record IncomeExpenseFetchingAction(ApplicationState State);
 	public record IncomeExpenseFetchingErrorAction(DisplayMessage Message);
 	public record IncomeExpenseProcessedAction(IncomeExpenseState State);
 	public record IncomeExpenseProcessingAction(int Year, int Month);

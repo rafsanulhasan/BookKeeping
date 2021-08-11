@@ -1,106 +1,127 @@
 ﻿@page "/reconciliation"
 @inherits FluxorComponent
 
+@inject IncomeExpenseViewModel ViewModel
+@inject ILogger<Reconciliation> Logger
+
 <h1>Incomes and Expenses with Cumuliative Accounts</h1>
 
-@if (YearsState!.Value.IsLoading)
+@if (ViewModel.ApplicationState.Value.YearsState is YearsState yearsState)
 {
-    <p><em>Loading...</em></p>
-}
-else if (YearsState!.Value.IsLoaded)
-{
-    <select @bind="_selectedYear"
+    @if (yearsState.IsLoading)
+    {
+        <p><em>Fetching years...</em></p>
+    }
+    else if (yearsState.IsLoaded)
+    {
+        <label>Select a Fiscal year: </label>
+        <select @bind="ViewModel.SelectedYear"
         @bind:event="oninput"
-        @onchange="OnChange">
-        <option selected="selected" value="0">Select an option</option>
-        @if (YearsState.Value.Data is not null)
-        {
-            foreach (var y in YearsState.Value.Data)
+        @onchange="ViewModel.OnChange">
+            <option selected="selected" value="0">Select an option</option>
+            @if (yearsState.Data is List<int> years)
             {
-                <option value="@y">@y</option>
+                foreach (var y in years)
+                {
+                    <option value="@y">@y</option>
+                }
             }
+        </select>
+        <button @onclick="ViewModel.GetYears">Refresh</button>
+        @if (ViewModel.IsInvalidSelection)
+        {
+            <div class="text-danger">Please select a valid year</div>
+}
+        else if (ViewModel.SelectedState is null
+         && !ViewModel.IsInvalidSelection
+        )
+        {
+            <div class="text-danger">No Data Available</div>
         }
-    </select>
-    <button @onclick="GetYears">Refresh</button>
-    @if (_invalidSelection)
-    {
-        <div class="danger">Please select a valid option</div>
-    }
-    else if (_isLoading)
-    {
-        <div>Loading</div>
-    }
-    else if (_dto is null)
-    {
-        <div>No data available</div>
-    }
-    else
-    {
-        <table>
-            <thead>
-                <tr>
-                    <th colspan="14" style="text-align: center">
-                        Year @_selectedYear
-                    </th>
-                </tr>
-                <tr>
-                    <th style="padding:5px"></th>
-                    <th style="padding:5px"></th>
-                    @for (var m = 1; m <= 12; m++)
-                    {
-                        <th style="padding:5px; text-align:center">
-                            @DateTime.Parse($"{m}/1/{_selectedYear}").ToString("MMM")
+        else if (ViewModel.SelectedState is IncomeExpenseState selectedState)
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="14" style="text-align: center">
+                            Year @ViewModel.SelectedYear
                         </th>
-                    }
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="padding:5px"></td>
-                    <th style="padding: 5px; text-align: right">Incomes</th>
-                    @foreach (var d in _dto.Incomes)
+                    </tr>
+                    <tr>
+                        <th style="padding:5px"></th>
+                        <th style="padding:5px"></th>
+                        @for (var m = 1; m <= 12; m++)
+                        {
+                            <th style="padding:5px; text-align:center">
+                                @DateTime.Parse($"{m}/1/{ViewModel.SelectedYear}").ToString("MMM")
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (selectedState.Data is IncomeExpenseDto data)
                     {
-                        <td style="padding: 5px; text-align: center">@d.Value</td>
+                        <tr>
+                            <td style="padding:5px"></td>
+                            <th style="padding: 5px; text-align: right">Incomes</th>
+                            @foreach (var d in data.Incomes)
+                            {
+                                <td style="padding: 5px; text-align: center">@d.Value</td>
+                            }
+                        </tr>
+                        <tr>
+                            <td style="padding:5px"></td>
+                            <th style="padding: 5px; text-align: right">Cumuliative Incomes</th>
+                            @foreach (var d in data.CumuliativeIncomes)
+                            {
+                                <td style="padding: 5px; text-align: center">@d.Value</td>
+                            }
+                        </tr>
+                        <tr>
+                            <td style="padding:5px"></td>
+                            <th style="padding: 5px; text-align: right">Expenses</th>
+                            @foreach (var d in data.Expenses)
+                            {
+                                <td style="padding: 5px; text-align: center">@d.Value</td>
+                            }
+                        </tr>
+                        <tr>
+                            <td style="padding:5px"></td>
+                            <th style="padding: 5px; text-align: right">Cumuliative Expenses</th>
+                            @foreach (var d in data.CumuliativeExpenses)
+                            {
+                                <td style="padding: 5px; text-align: center">@d.Value</td>
+                            }
+                        </tr>
+                        <tr>
+                            <td style="padding:5px"></td>
+                            <th style="padding: 5px; text-align: right">Result</th>
+                            @foreach (var d in data.Result)
+                            {
+                                <td style="padding: 5px; text-align: center">@d.Value</td>
+                            }
+                        </tr>
                     }
-                </tr>
-                <tr>
-                    <td style="padding:5px"></td>
-                    <th style="padding: 5px; text-align: right">Cumuliative Incomes</th>
-                    @foreach (var d in _dto.CumuliativeIncomes)
+                    else
                     {
-                        <td style="padding: 5px; text-align: center">@d.Value</td>
+                        <tr>
+                            <td colspan="14">No Data Available</td>
+                        </tr>
                     }
-                </tr>
-                <tr>
-                    <td style="padding:5px"></td>
-                    <th style="padding: 5px; text-align: right">Expenses</th>
-                    @foreach (var d in _dto.Expenses)
-                    {
-                        <td style="padding: 5px; text-align: center">@d.Value</td>
-                    }
-                </tr>
-                <tr>
-                    <td style="padding:5px"></td>
-                    <th style="padding: 5px; text-align: right">Cumuliative Expenses</th>
-                    @foreach (var d in _dto.CumuliativeExpenses)
-                    {
-                        <td style="padding: 5px; text-align: center">@d.Value</td>
-                    }
-                </tr>
-                <tr>
-                    <td style="padding:5px"></td>
-                    <th style="padding: 5px; text-align: right">Result</th>
-                    @foreach (var d in _dto.Result)
-                    {
-                        <td style="padding: 5px; text-align: center">@d.Value</td>
-                    }
-                </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        }
     }
+}
+else
+{
+    <p><em>Populating years...</em></p>
 }
 
-@if (!string.IsNullOrWhiteSpace(_error))
+@if (!string.IsNullOrWhiteSpace(ViewModel.ErrorMessage))
 {
-    <div>@_error</div>
+    <div class="text-danger">
+        <label>Error: </label>
+        @ViewModel.ErrorMessage
+    </div>
 }

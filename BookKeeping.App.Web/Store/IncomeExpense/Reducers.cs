@@ -1,56 +1,58 @@
 ﻿using Fluxor;
 
-using System;
-
-using static BookKeeping.App.Web.Store.DisplayMessage;
-
-namespace BookKeeping.App.Web.Store.IncomeExpense
+namespace BookKeeping.App.Web.Store
 {
-	public static class Reducers
+	public static partial class Reducers
 	{
 
 		[ReducerMethod]
-		public static IncomeExpenseState UpdateIncomeExpenseStateReducer(
-			IncomeExpenseState state,
+		public static ApplicationState UpdateIncomeExpensesStateReducer(
+			ApplicationState state,
 			IncomeExpenseFetchedAction action
 		)
 			=> state with
 			{
-				IsLoading = false,
-				IsLoaded = true,
-				IsFailed = false,
-				FetchedAt = DateTime.UtcNow,
-				Data = action.State.Data,
-				Message = new DisplayMessage("Fetched data successfully", MessageType.Information)
+				IncomeExpenseStatsByYear = action.State.IncomeExpenseStatsByYear,
+				SelectedYear = action.State.SelectedYear,
+				SelectedIncomeExpense = action.State.SelectedIncomeExpense,
+				IsLoading = action.State.SelectedIncomeExpense?.IsLoading ?? action.State.IsLoading,
+				IsLoaded = action.State.SelectedIncomeExpense?.IsLoaded ?? action.State.IsLoaded,
+				IsFailed = action.State.SelectedIncomeExpense?.IsFailed ?? action.State.IsFailed,
+				DisplayMessage = action.State.SelectedIncomeExpense?.DisplayMessage ?? action.State.DisplayMessage
 			};
 
 		[ReducerMethod]
-		public static IncomeExpenseState UpdateIncomeExpenseStateReducer(
-			IncomeExpenseState state,
+		public static ApplicationState UpdateIncomeExpenseStateReducer(
+			ApplicationState state,
 			IncomeExpenseFetchingAction action
 		)
 			=> state with
 			{
+				IncomeExpenseStatsByYear = action.State.IncomeExpenseStatsByYear
+									?? new()
+									{
+										{
+											action.State.SelectedYear ?? 0,
+											action.State.SelectedIncomeExpense
+										}
+									},
+				SelectedYear = action.State.SelectedYear,
+				SelectedIncomeExpense = action.State.SelectedIncomeExpense ?? state.SelectedIncomeExpense,
 				IsLoading = true,
 				IsLoaded = false,
-				Message = new DisplayMessage(
-					$"Fetchting Income and Expenses from API endpint: {action.Uri}",
-					MessageType.Information
-				),
-				Data = state.Data
+				IsFailed = false,
+				DisplayMessage = action.State.SelectedIncomeExpense?.DisplayMessage
 			};
 
 		[ReducerMethod]
-		public static IncomeExpenseState UpdateIncomeExpenseStateReducer(
-			IncomeExpenseState state,
+		public static ApplicationState UpdateIncomeExpenseErrorStateReducer(
+			ApplicationState state,
 			IncomeExpenseFetchingErrorAction action
 		)
 			=> state with
 			{
-				IsLoading = false,
-				IsLoaded = false,
 				IsFailed = true,
-				Message = action.Message
+				DisplayMessage = action.Message
 			};
 	}
 }

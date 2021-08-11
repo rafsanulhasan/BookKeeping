@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace BookKeeping.App.Web.Store.EntityTag
+﻿namespace BookKeeping.App.Web.Store
 {
-	public record UpdateEntityTagAction(IDictionary<string, string?> EntityTags);
+	public record UpdateEntityTagAction(ApplicationState State);
 }
