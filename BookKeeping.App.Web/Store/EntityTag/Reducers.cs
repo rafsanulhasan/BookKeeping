@@ -1,17 +1,18 @@
-﻿using Fluxor;
+﻿
+using Fluxor;
 
-namespace BookKeeping.App.Web.Store.EntityTag
+namespace BookKeeping.App.Web.Store
 {
-	public static class EntityTagReducer
+	public static partial class EntityTagReducer
 	{
 		[ReducerMethod]
-		public static EntityTagState UpdateEntityTag(
-			EntityTagState state,
+		public static ApplicationState UpdateEntityTag(
+			ApplicationState state,
 			UpdateEntityTagAction action
 		)
 			=> state with
 			{
-				EntityTags =action.EntityTags
+				EntityTags = action.State.EntityTags
 			};
 	}
 }

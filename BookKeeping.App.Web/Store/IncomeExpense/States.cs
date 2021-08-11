@@ -1,26 +1,25 @@
 ﻿using BookKeeping.API.DTOs;
 
 using System;
-using System.Collections.Generic;
 
-namespace BookKeeping.App.Web.Store.IncomeExpense
+namespace BookKeeping.App.Web.Store
 {
 	public record IncomeExpenseState(
 		bool IsLoading,
 		bool IsLoaded,
 		bool IsFailed,
-		DisplayMessage? Message,
+		DisplayMessage? DisplayMessage,
 		TimeSpan? CacheDuration,
 		DateTime? FetchedAt,
-		Dictionary<int, IncomeExpenseDto>? Data
+		IncomeExpenseDto? Data = null
 	)
-		: FetchedStateBase<Dictionary<int, IncomeExpenseDto>>(
+		: FetchedStateBase<IncomeExpenseDto>(
+			CacheDuration,
+			FetchedAt,
+			Data,
 			IsLoading,
 			IsLoaded,
 			IsFailed,
-			Message,
-			CacheDuration,
-			FetchedAt,
-			Data
+			DisplayMessage
 		);
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BookKeeping.App.Web.Store.EntityTag
+namespace BookKeeping.App.Web.Store
 {
-	public record EntityTagState(IDictionary<string, string?> EntityTags);
+	public record EntityTagState(Dictionary<string, string?> EntityTags);
 }

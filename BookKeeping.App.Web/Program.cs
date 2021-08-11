@@ -1,4 +1,5 @@
 
+using BookKeeping.App.Web.Services;
 using BookKeeping.App.Web.ViewModels;
 
 using Fluxor;
@@ -45,6 +46,7 @@ namespace BookKeeping.App.Web
 			});
 
 			services.AddScoped<IncomeExpenseViewModel>();
+			services.AddSingleton<ILocalStorageService, LocalStorageService>();
 
 			services.AddLogging();
 

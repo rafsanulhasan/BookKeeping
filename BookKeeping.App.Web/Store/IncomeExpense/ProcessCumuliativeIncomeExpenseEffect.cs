@@ -1,6 +1,4 @@
 ﻿
-using BookKeeping.App.Web.Store.IncomeExpense;
-
 using Fluxor;
 
 using System.Threading.Tasks;
@@ -10,10 +8,10 @@ namespace BookKeeping.App.Web.Store
 	public class ProcessCumuliativeIncomeExpenseEffect
 		: Effect<IncomeExpenseFetchedAction>
 	{
-		private readonly IncomeExpenseState _state;
+		private readonly ApplicationState _state;
 
 		public ProcessCumuliativeIncomeExpenseEffect(
-			IState<IncomeExpenseState> state
+			IState<ApplicationState> state
 		)
 			=> _state = state.Value;
 
@@ -22,11 +20,14 @@ namespace BookKeeping.App.Web.Store
 			IDispatcher dispatcher
 		)
 		{
-			if (_state.Data is not null
-			 && _state.Data.TryGetValue(action.Year, out var dto)
-			)
+			if (action.State.SelectedYear.HasValue)
 			{
+				if (_state.IncomeExpenseStatsByYear is not null
+			      && _state.IncomeExpenseStatsByYear.TryGetValue(action.State.SelectedYear.Value, out var dto)
+				)
+				{
 
+				}
 			}
 			return Task.CompletedTask;
 		}
