@@ -16,7 +16,7 @@ using static BookKeeping.App.Web.Store.DisplayMessage;
 namespace BookKeeping.App.Web.ViewModels
 {
 	public class IncomeExpenseViewModel
-		: ReactiveObject
+		: ReactiveObject, IDisposable
 	{
 		private readonly CompositeDisposable _disposables;
 		public IDispatcher Dispatcher { get; }
@@ -92,7 +92,7 @@ namespace BookKeeping.App.Web.ViewModels
 			{
 				var state = ep.EventArgs;
 				var dm = state.DisplayMessage
-					 ?? new("Locading...", MessageType.Information);
+					 ?? new("Loading...", MessageType.Information);
 				if (dm is not null)
 				{
 					switch (dm.Type)
@@ -174,5 +174,10 @@ namespace BookKeeping.App.Web.ViewModels
 			=> SelectedYear = args.Value is not null && int.TryParse(args.Value.ToString(), out var selectedYear)
 			 ? selectedYear
 			 : 0;
+
+		public void Dispose()
+		{
+			_disposables?.Dispose();
+		}
 	}
 }

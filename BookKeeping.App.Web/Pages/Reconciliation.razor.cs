@@ -8,6 +8,7 @@ namespace BookKeeping.App.Web.Pages
 {
 	public partial class Reconciliation
 	{
+		private bool _disposed;
 		private readonly CompositeDisposable _disposables = new();
 
 		protected override void OnInitialized()
@@ -20,6 +21,16 @@ namespace BookKeeping.App.Web.Pages
 			)
 			.Subscribe(_ => StateHasChanged())
 			.DisposeWith(_disposables);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			if (!_disposed)
+			{
+				if (disposing)
+					_disposables?.Dispose();
+			}
 		}
 	}
 }
